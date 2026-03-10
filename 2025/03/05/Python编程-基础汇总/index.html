@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Python编程-基础汇总 | Minna's Blog</title><meta name="author" content="Minna Li"><meta name="copyright" content="Minna Li"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="几大数据结构 列表 List有序，可变，可重复[1, 2, 2, 3]  元组 Tuple有序，不可变，可重复(1, 2, 2, 3)  字典 Dict无序！可变，键唯一{“a”:1, “b”:2}  字符串 Str有序，不可变，可重复“hello”  集合 Set无序，可变，元素唯一(不重复){1,2,3}   快速总览常见操作对应 &#x3D; &quot;&quot;&quot; 操作        列表      字典">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python编程-基础汇总">
+<meta property="og:url" content="http://example.com/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="Minna&#39;s Blog">
+<meta property="og:description" content="几大数据结构 列表 List有序，可变，可重复[1, 2, 2, 3]  元组 Tuple有序，不可变，可重复(1, 2, 2, 3)  字典 Dict无序！可变，键唯一{“a”:1, “b”:2}  字符串 Str有序，不可变，可重复“hello”  集合 Set无序，可变，元素唯一(不重复){1,2,3}   快速总览常见操作对应 &#x3D; &quot;&quot;&quot; 操作        列表      字典">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-03-05T04:15:48.000Z">
+<meta property="article:modified_time" content="2026-03-10T08:19:38.616Z">
+<meta property="article:author" content="Minna Li">
+<meta property="article:tag" content="Python基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Python编程-基础汇总",
+  "url": "http://example.com/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/",
+  "image": "http://example.com/img/butterfly-icon.png",
+  "datePublished": "2025-03-05T04:15:48.000Z",
+  "dateModified": "2026-03-10T08:19:38.616Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Minna Li",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Python编程-基础汇总',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Minna's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Python编程-基础汇总</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Python编程-基础汇总</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-05T04:15:48.000Z" title="发表于 2025-03-05 12:15:48">2025-03-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-10T08:19:38.616Z" title="更新于 2026-03-10 16:19:38">2026-03-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Python/">Python</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Python/Python%E7%BC%96%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/">Python编程从入门到实践</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="几大数据结构"><a href="#几大数据结构" class="headerlink" title="几大数据结构"></a>几大数据结构</h1><ul>
+<li><p>列表 List<br>有序，可变，可重复<br>[1, 2, 2, 3]</p>
+</li>
+<li><p>元组 Tuple<br>有序，不可变，可重复<br>(1, 2, 2, 3)</p>
+</li>
+<li><p>字典 Dict<br><strong>无序</strong>！可变，键唯一<br>{“a”:1, “b”:2}</p>
+</li>
+<li><p>字符串 Str<br>有序，不可变，可重复<br>“hello”</p>
+</li>
+<li><p>集合 Set<br>无序，可变，元素唯一(不重复)<br>{1,2,3}</p>
+</li>
+</ul>
+<h1 id="快速总览"><a href="#快速总览" class="headerlink" title="快速总览"></a>快速总览</h1><pre class="line-numbers language-python" data-language="python"><code class="language-python">常见操作对应 <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
+操作        列表      字典      集合      字符串
+-----------------------------------------------
+添加       append    dict[k]=v  add       +
+删除       remove    pop        remove    replace
+查找       index     get        in        find
+是否存在   in        in         in        in
+遍历       for item  for k,v    for item  for char
+长度       len()     len()      len()     len()
+清空       clear()   clear()    clear()   无
+复制       copy()    copy()     copy()    切片
+排序       sort()    无         无        无
+"""</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="可变性决定方法"><a href="#可变性决定方法" class="headerlink" title="可变性决定方法"></a>可变性决定方法</h1><pre class="line-numbers language-none"><code class="language-none"># 可变对象（Mutable）: 可以修改自身
+可变对象 &#x3D; &#123;
+    &quot;列表&quot;: [&quot;可以修改元素&quot;, &quot;可以添加删除&quot;],
+    &quot;字典&quot;: [&quot;可以修改值&quot;, &quot;可以添加、删除键值对&quot;],
+    &quot;集合&quot;: [&quot;可以添加删除元素&quot;]
+&#125;
+
+# 不可变对象（Immutable）: 不能修改自身
+不可变对象 &#x3D; &#123;
+    &quot;字符串&quot;: &quot;修改会创建新字符串&quot;,
+    &quot;元组&quot;: &quot;不能修改元素&quot;,
+    &quot;数字&quot;: &quot;不能修改值&quot;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="集合Set的常用方法"><a href="#集合Set的常用方法" class="headerlink" title="集合Set的常用方法"></a>集合Set的常用方法</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">my_set<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">&#125;</span>
+<span class="token comment"># 增加单个/多个元素,直接在集合上做修改,内存id保持不变</span>
+my_set<span class="token punctuation">.</span>add<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>  <span class="token comment"># &#123;1,2,3,4&#125; </span>
+my_set<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">#&#123;1,2,3,4,5,6&#125;</span>
+
+<span class="token comment"># 删除元素</span>
+my_set<span class="token punctuation">.</span>remove<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>  <span class="token comment"># 删除2，不存在报错</span>
+my_set<span class="token punctuation">.</span>discard<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token comment"># 删除5，不存在不报错</span>
+
+<span class="token comment"># 查找 in</span>
+
+<span class="token comment"># 内存地址不变</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"内存地址始终相同: </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">id</span><span class="token punctuation">(</span>my_set<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">lst <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span>
+<span class="token comment"># 1. 增: append(x), insert(i,x), extend(iterable)</span>
+lst<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>          <span class="token comment"># 末尾添加 [1,2,3,4]</span>
+lst<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1.5</span><span class="token punctuation">)</span>     <span class="token comment"># 在index=1的位置插入 [1,1.5,2,3]</span>
+lst<span class="token punctuation">.</span>extend<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment"># 输出[1, 2, 3, 4, 5, 6]</span>
+lst<span class="token punctuation">.</span>extend<span class="token punctuation">(</span><span class="token string">"ab"</span><span class="token punctuation">)</span>       <span class="token comment"># [1, 2, 3, 'a', 'b']</span>
+<span class="token comment"># 2. 删: remove(x), pop([i]), clear()</span>
+lst<span class="token punctuation">.</span>remove<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>  <span class="token comment"># 删除第一个2</span>
+popped <span class="token operator">=</span> lst<span class="token punctuation">.</span>pop<span class="token punctuation">(</span>k<span class="token punctuation">)</span>      <span class="token comment"># 删除并返回index=k的元素</span>
+
+<span class="token comment">#3. 改: 直接索引修改 lst[i] = x</span>
+
+<span class="token comment"># 4. 查: index(x), count(x)</span>
+idx <span class="token operator">=</span> lst<span class="token punctuation">.</span>index<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token comment">#查元素2的下标</span>
+count <span class="token operator">=</span> lst<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token comment">#查元素2出现的次数</span>
+
+<span class="token comment"># 5. 排序: sort(), reverse()</span>
+lst<span class="token punctuation">.</span>sort<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token builtin">sorted</span><span class="token punctuation">(</span>lst<span class="token punctuation">)</span>
+<span class="token comment"># 6. 其他: copy()</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">dct <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">'a'</span><span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">'b'</span><span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">&#125;</span>
+<span class="token comment"># 1. 增/改: dict[key] = value, update(iterable)</span>
+dct<span class="token punctuation">[</span><span class="token string">'c'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">3</span> 
+dct<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string">'d'</span><span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">'e'</span><span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>dct<span class="token punctuation">)</span> <span class="token comment">#&#123;'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5&#125;</span>
+
+<span class="token comment">#2. 删: pop(key), popitem(), clear()</span>
+<span class="token comment">#!!注意，字典没有remove方法</span>
+<span class="token keyword">del</span> dct<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+popped <span class="token operator">=</span> dct<span class="token punctuation">.</span>pop<span class="token punctuation">(</span><span class="token string">'b'</span><span class="token punctuation">)</span> <span class="token comment"># 删除都得放key，不是放index</span>
+
+<span class="token comment"># 3. 查: get(key, [default]), keys(), values(), items()</span>
+get
+<span class="token keyword">for</span> key<span class="token punctuation">,</span> value <span class="token keyword">in</span> dct<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token comment"># 4. 存在: in 操作符</span>
+<span class="token comment"># 5. 其他: copy(), setdefault()</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">my_str<span class="token operator">=</span><span class="token string">'hello'</span>
+<span class="token comment"># 1. 修改(返回新字符串):</span>
+<span class="token comment">#    - 大小写: lower(), upper(), title(), capitalize()</span>
+<span class="token comment">#    - 替换: replace(old, new)</span>
+<span class="token comment">#    - 去除: strip(), lstrip(), rstrip()</span>
+result<span class="token operator">=</span>my_str<span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">'h'</span><span class="token punctuation">,</span><span class="token string">'H'</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 增加元素</span>
+str_new <span class="token operator">=</span> my_str <span class="token operator">+</span> <span class="token string">'!'</span> <span class="token comment">#'hello!'</span>
+
+<span class="token comment"># 删除元素,比如删除最后一个元素</span>
+str2 <span class="token operator">=</span> my_str<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
+
+<span class="token comment"># 删除空白</span>
+my_str<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">#直接在原字符串上修改但只能删除首尾的空白，字符串中间的空白删不了</span>
+
+<span class="token comment">#查找: find(), index(), count(), startswith(), endswith()</span>
+my_str<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'l'</span><span class="token punctuation">)</span> <span class="token comment"># 2</span>
+my_str<span class="token punctuation">.</span>index<span class="token punctuation">(</span><span class="token string">'lo'</span><span class="token punctuation">)</span> <span class="token comment">#3</span>
+
+<span class="token comment">#判断: isalpha(), isdigit(), isalnum(), isspace() 等; 返回布尔值</span>
+my_str<span class="token punctuation">.</span>isalpha<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment">#True</span>
+
+<span class="token comment">#分割: split(), rsplit(), splitlines(), partition()</span>
+
+<span class="token comment">#连接: join(iterable)</span>
+<span class="token comment"># join() 将可迭代对象中的元素用指定字符串连接</span>
+separator <span class="token operator">=</span> <span class="token string">"-"</span>
+words <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"Hello"</span><span class="token punctuation">,</span> <span class="token string">"World"</span><span class="token punctuation">,</span> <span class="token string">"Python"</span><span class="token punctuation">]</span>
+result1 <span class="token operator">=</span> separator<span class="token punctuation">.</span>join<span class="token punctuation">(</span>words<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"连接列表: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>result1<span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>  <span class="token comment"># Hello-World-Python</span>
+
+
+<span class="token comment"># 字符串的任意修改都会建立一个新的字符串对象</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Minna Li</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/">http://example.com/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">Minna's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Python%E5%9F%BA%E7%A1%80/">Python基础</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/03/03/%E6%9D%8E%E8%88%AA-%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E7%AC%94%E8%AE%B0/" title="李航-统计学习方法笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">李航-统计学习方法笔记</div></div><div class="info-2"><div class="info-item-1">Chapter 1：统计学习概论基础分类 监督学习，非监督学习，强化学习  监督学习在监督学习中，假设输入输出变量(X, Y)服从联合概率分布 $P(X, Y)$，为什么要有这个假设呢？  $P(X,Y)$可以理解成数据生成的内在机制，现实世界中的每一个样本都是独立同分布的抽样于这个未知但固定的$P(X,Y)$,包括我们的训练集和测试集，只有他们服从相同的分布，在训练集中学到的规律才能泛化应用到测试集的预测中，这是泛化能力的理论前提 从统计角度来说，$$P(X,Y)&#x3D;P(X)*P(Y|X),$$ P(Y|X) (已知某个输入数据是X,得到输出数据Y的概率) 是我们最终想学习的目标，它刻画了数据的不确定性来源，比如同一个X,会得到不同的输出Y。 根据学习目标划分了生成模型和判别模型： 学习联合概率分布 $P(X, Y)$是生成方法；比如朴素贝叶斯、隐马尔可夫模型 直接学习决策函数 $f(X)$ 或者 条件分布$P(Y|X)$是判别方法；比如感知机、决策树、逻辑回归、SVM、k 近邻    无监督学习和强化学习这里暂时不做讨论 统计学习方法三要素 模型：所要学习的条件概率分...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/01/28/Python%E7%BC%96%E7%A8%8B-Numpy%E5%BA%93/" title="Python编程-Numpy库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-28</div><div class="info-item-2">Python编程-Numpy库</div></div><div class="info-2"><div class="info-item-1">Numpy库的层级结构# NumPy的安装目录结构（简化版） site-packages/numpy/ ├── __init__.py              # 包的入口点 ├── __config__.py           # 配置信息 ├── _distributor_init.py    # 分发器初始化 ├── _globals.py            # 全局变量 ├── _pyinstaller.py        # PyInstaller支持 │ ├── core/                  # 核心模块（子包） │   ├── __init__.py │   ├── _dtype.py         # 数据类型实现 │   ├── _multiarray_umath.cpython-39.so  # C扩展（性能核心） │   ├── arrayprint.py     # 数组打印 │   ├── defchararray.py   # 字符数组 │   ├── fromnumeric.py    # fromnumeric模块 │  ...</div></div></div></a><a class="pagination-related" href="/2025/01/20/Python%E7%BC%96%E7%A8%8B-Python%E5%B1%82%E7%BA%A7%E6%A6%82%E5%BF%B5/" title="Python编程-Python层级概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-20</div><div class="info-item-2">Python编程-Python层级概念</div></div><div class="info-2"><div class="info-item-1">一、Python生态（物理层级）基本概念： 模块module ：一个.py文件就是一个模块 包package ： 由多个相关的模块组成的目录就是包，包下必须包含__init__.py文件 库library : 多个功能相关的包封装构成一个库，可以直接上传到PyPI（Python Package Index），这是 Python 官方的包仓库 框架framework：提供一个架构，遵循特定的规则写代码  包设计原则:  扁平优于嵌套（但不要太扁平） 每个包&#x2F;模块有单一明确的责任 在顶层的__init__.py 文件中要做以下事情： 控制公开的API 使用__all__明确导出内容 定义延迟加载提升性能，比如numpy中的__getattr__() 提供清晰的导入路径    常用库及其功能：数据处理与分析库NumpyPandas数据操作与预处理引擎，专门用于结构化数据的分析、处理、清洗、转换、统计. Pandas依赖NumPy，通常一起导入 原始数据 → [Pandas清洗&#x2F;转换] → 干净数据 → [模型训练] → 结果         \___________...</div></div></div></a><a class="pagination-related" href="/2025/02/28/Python%E7%BC%96%E7%A8%8B-Pandas%E5%BA%93/" title="Python编程-Pandas库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-28</div><div class="info-item-2">Python编程-Pandas库</div></div><div class="info-2"><div class="info-item-1">Pandas基础数据结构：Series ：一维数据（想象Excel中的一列数据，带行索引（有标签）） # 创建一个Series import pandas as pd # 默认下标 names1 = pd.Series(['张三', '李四', '王五']) print(f"names1输出:\n&#123;names1&#125;")  # 自定义下标 names2 = pd.Series(['张三', '李四', '王五'],                     index = [1,2,3]) print(f"names2输出:\n&#123;names2&#125;")   print(f"类型：&#123;type(names1)&#125;") #type 是python的内置函数，通过 type() 函数获取变量 names 的数据类型  #调用1号的名字 print(names2[1]) # 输出结果： names1输出: 0    张三 1    李四 2    王五 dtype: object #print(names)会返回names中元素的数据类型 n...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Minna Li</div><div class="author-info-description">Minna Li的个人技术博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%A0%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">几大数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%80%BB%E8%A7%88"><span class="toc-number">2.</span> <span class="toc-text">快速总览</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%AF%E5%8F%98%E6%80%A7%E5%86%B3%E5%AE%9A%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">可变性决定方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E5%90%88Set%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">集合Set的常用方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%97%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E5%85%B8"><span class="toc-number">3.3.</span> <span class="toc-text">字典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.4.</span> <span class="toc-text">字符串</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/" title="Python编程-基础汇总">Python编程-基础汇总</a><time datetime="2025-03-05T04:15:48.000Z" title="发表于 2025-03-05 12:15:48">2025-03-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/03/%E6%9D%8E%E8%88%AA-%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E7%AC%94%E8%AE%B0/" title="李航-统计学习方法笔记">李航-统计学习方法笔记</a><time datetime="2025-03-03T04:51:46.000Z" title="发表于 2025-03-03 12:51:46">2025-03-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/28/Python%E7%BC%96%E7%A8%8B-Pandas%E5%BA%93/" title="Python编程-Pandas库">Python编程-Pandas库</a><time datetime="2025-02-28T10:14:16.000Z" title="发表于 2025-02-28 18:14:16">2025-02-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/28/Python%E7%BC%96%E7%A8%8B-Numpy%E5%BA%93/" title="Python编程-Numpy库">Python编程-Numpy库</a><time datetime="2025-01-27T16:00:00.000Z" title="发表于 2025-01-28 00:00:00">2025-01-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/20/Python%E7%BC%96%E7%A8%8B-Python%E5%B1%82%E7%BA%A7%E6%A6%82%E5%BF%B5/" title="Python编程-Python层级概念">Python编程-Python层级概念</a><time datetime="2025-01-19T16:00:00.000Z" title="发表于 2025-01-20 00:00:00">2025-01-20</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Minna Li</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
