@@ -1,0 +1,935 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>TensorFlow框架学习 | Minna's Blog</title><meta name="author" content="Minna Li"><meta name="copyright" content="Minna Li"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="总述 主要模块导入 #导入深度学习架构 from tensorflow import keras from keras import models, optimizers, metrics, layers, regularizers, losses from keras.models import Sequential from keras.optimizers import SGD, RMSpr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow框架学习">
+<meta property="og:url" content="https://minna-li.github.io/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:site_name" content="Minna&#39;s Blog">
+<meta property="og:description" content="总述 主要模块导入 #导入深度学习架构 from tensorflow import keras from keras import models, optimizers, metrics, layers, regularizers, losses from keras.models import Sequential from keras.optimizers import SGD, RMSpr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minna-li.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-03-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-23T07:38:05.490Z">
+<meta property="article:author" content="Minna Li">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minna-li.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "TensorFlow框架学习",
+  "url": "https://minna-li.github.io/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/",
+  "image": "https://minna-li.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-03-26T16:00:00.000Z",
+  "dateModified": "2026-07-23T07:38:05.490Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Minna Li",
+      "url": "https://minna-li.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://minna-li.github.io/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'TensorFlow框架学习',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Minna's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">TensorFlow框架学习</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">TensorFlow框架学习</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-26T16:00:00.000Z" title="发表于 2025-03-27 00:00:00">2025-03-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-23T07:38:05.490Z" title="更新于 2026-07-23 15:38:05">2026-07-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%8CTensorFlow/">深度学习，TensorFlow</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>总述</h1>
+<h1>主要模块导入</h1>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#导入深度学习架构</span>
+<span class="token keyword">from</span> tensorflow <span class="token keyword">import</span> keras
+<span class="token keyword">from</span> keras <span class="token keyword">import</span> models<span class="token punctuation">,</span> optimizers<span class="token punctuation">,</span> metrics<span class="token punctuation">,</span> layers<span class="token punctuation">,</span> regularizers<span class="token punctuation">,</span> losses
+<span class="token keyword">from</span> keras<span class="token punctuation">.</span>models <span class="token keyword">import</span> Sequential
+<span class="token keyword">from</span> keras<span class="token punctuation">.</span>optimizers <span class="token keyword">import</span> SGD<span class="token punctuation">,</span> RMSprop<span class="token punctuation">,</span> Adam<span class="token punctuation">,</span> Adagrad
+<span class="token comment"># 本算例用到了贝叶斯优化和哈密顿蒙特卡洛（HMC）采样，所以需要导入TensorFlow 的概率编程扩展库</span>
+<span class="token keyword">import</span> tensorflow_probability <span class="token keyword">as</span> tfp
+<span class="token comment"># TensorFlow Probability 的分布模块</span>
+tfd <span class="token operator">=</span> tfp<span class="token punctuation">.</span>distributions
+<span class="token comment"># 此外一些必备的常用库也需要导入</span>
+<span class="token keyword">import</span> time
+<span class="token keyword">import</span> shutil
+<span class="token keyword">import</span> pathlib
+<span class="token keyword">import</span> itertools
+<span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">import</span> seaborn <span class="token keyword">as</span> sns
+sns<span class="token punctuation">.</span>set_style<span class="token punctuation">(</span><span class="token string">'darkgrid'</span><span class="token punctuation">)</span>
+<span class="token keyword">import</span> matplotlib<span class="token punctuation">.</span>pyplot <span class="token keyword">as</span> plt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1>实验可重复性的保证</h1>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">set_reproducibility</span><span class="token punctuation">(</span>seed<span class="token operator">=</span><span class="token number">42</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    random<span class="token punctuation">.</span>seed<span class="token punctuation">(</span>seed<span class="token punctuation">)</span> <span class="token comment">#锁死 Python 自带的随机生成器</span>
+    os<span class="token punctuation">.</span>environ<span class="token punctuation">[</span><span class="token string">'PYTHONHASHSEED'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token builtin">str</span><span class="token punctuation">(</span>seed<span class="token punctuation">)</span> <span class="token comment">#锁死 Python 内部字典和集合的哈希排序顺序</span>
+    np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>seed<span class="token punctuation">(</span>seed<span class="token punctuation">)</span> <span class="token comment">#锁死 NumPy 矩阵操作中的随机性</span>
+    tf<span class="token punctuation">.</span>random<span class="token punctuation">.</span>set_seed<span class="token punctuation">(</span>seed<span class="token punctuation">)</span> <span class="token comment">#锁死 TensorFlow 图级别的随机性。这决定了神经模型每次初始化时的权重矩阵一模一样！！！</span>
+    tf<span class="token punctuation">.</span>config<span class="token punctuation">.</span>experimental<span class="token punctuation">.</span>enable_op_determinism<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment"># 显卡（GPU）在做卷积运算时，为了追求极致速度，默认会使用一些“非确定性”的并行算法（每次算出来的结果在小数点后很多位会有极小偏差）。这一行代码强制 GPU 放弃这种加速机制，必须老老实实地按确定顺序算，确保 100% 绝对复现</span>
+
+seed_value <span class="token operator">=</span> <span class="token number">88</span> <span class="token comment"># 可以选择任何喜欢的整数</span>
+set_reproducibility<span class="token punctuation">(</span>seed_value<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1>划分数据集</h1>
+<p>核心工具：<br>
+<code>tf.keras.utils.image_dataset_from_directory</code> （TF 官方的数据加载神器）<br>
+<code>image_dataset_from_directory()</code> : 它不会把所有图片一次性塞进内存（那样内存会爆），而是建立一个“数据管道”。当你开始训练时，它会像流水线一样，从硬盘的对应文件夹里现抓取图片、现转换成 Tensor（张量矩阵）。  此外自带 validation_split 参数，可以直接在内存中完成分层划分，缺点是每次只能划一刀。注意划分train_ds 和 val_ds时一定要设置相同的随机种子确定两次刀法一样<br>
+<code>df.data</code> : 流水线管理系统。首先搞清楚硬盘、cpu、gpu各自的分工，硬盘放着庞大的数据集图片，cpu从硬盘读取以及数据预处理等，随后传递给gpu做计算；你会发现如果按照这个处理顺序，当cpu在处理图片时。gpu在闲置；<code>tf.data</code> 就是来解决这个问题的一条数据高效流转传送带。<br>
+<code>prefetch(num)</code> :cpu预取数据，意味着当gpu还在处理前一组数据时。cpu不会闲置，而是提前在后台预处理下一批数据，参数num表示它每次预处理num个批次的数据。更常用的是<code>prefetch(AUTOTUNE)</code>。<br>
+<code>AUTOTUNE</code>: 是<code>tf.data</code>里的最伟大的发明。它是让tf根据你当前的电脑cpu核心数和内存大小，自动决定后台提前预加载多少个张量矩阵（gpu处理的是多个features组合的张量矩阵，这就是batchsize的定义）</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 假设 input_dir 里直接放着按类别分好的所有图片</span>
+input_dir<span class="token operator">=</span><span class="token string">"/kaggle/input/augmented-alzheimer-data/augmented_data"</span>
+output_dir<span class="token operator">=</span><span class="token string">"./output"</span>
+batch_size <span class="token operator">=</span> <span class="token number">32</span>
+IMG_SIZE <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">224</span><span class="token punctuation">,</span> <span class="token number">224</span><span class="token punctuation">)</span>
+<span class="token comment"># 1. 划分出 70% 训练集，留出 30% 用于验证和测试</span>
+<span class="token comment">#train_ds是一个tf.data.Dataset对象</span>
+train_ds <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>image_dataset_from_directory<span class="token punctuation">(</span>
+    input_dir<span class="token punctuation">,</span>
+    validation_split<span class="token operator">=</span><span class="token number">0.30</span><span class="token punctuation">,</span>
+    subset<span class="token operator">=</span><span class="token string">"training"</span><span class="token punctuation">,</span>     <span class="token comment"># 提取训练部分 (70%)</span>
+    seed<span class="token operator">=</span><span class="token number">123</span><span class="token punctuation">,</span>
+    image_size<span class="token operator">=</span>IMG_SIZE<span class="token punctuation">,</span>
+    batch_size<span class="token operator">=</span>batch_size<span class="token punctuation">,</span>
+    label_mode<span class="token operator">=</span><span class="token string">'int'</span>  <span class="token comment"># 标签是0，1，2</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment"># 2. 提取那 30% 的数据</span>
+val_test_ds <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>image_dataset_from_directory<span class="token punctuation">(</span>
+    input_dir<span class="token punctuation">,</span>
+    validation_split<span class="token operator">=</span><span class="token number">0.30</span><span class="token punctuation">,</span>
+    subset<span class="token operator">=</span><span class="token string">"validation"</span><span class="token punctuation">,</span>   <span class="token comment"># 提取验证部分 (30%)</span>
+    seed<span class="token operator">=</span><span class="token number">123</span><span class="token punctuation">,</span>
+    image_size<span class="token operator">=</span>IMG_SIZE<span class="token punctuation">,</span>
+    batch_size<span class="token operator">=</span>batch_size<span class="token punctuation">,</span>
+    label_mode<span class="token operator">=</span><span class="token string">'int'</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment"># 3. 将这 30% 的数据对半分，得到 15% 的 val_ds 和 15% 的 test_ds</span>
+<span class="token comment"># 使用 tf.data 强大的原生操作来切分，.cardinality()：数数</span>
+val_batches <span class="token operator">=</span> tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>experimental<span class="token punctuation">.</span>cardinality<span class="token punctuation">(</span>val_test_ds<span class="token punctuation">)</span> <span class="token comment"># 计算总共有多少个 batch</span>
+test_ds <span class="token operator">=</span> val_test_ds<span class="token punctuation">.</span>take<span class="token punctuation">(</span>val_batches <span class="token operator">//</span> <span class="token number">2</span><span class="token punctuation">)</span>                <span class="token comment"># 取前一半作为测试集</span>
+val_ds <span class="token operator">=</span> val_test_ds<span class="token punctuation">.</span>skip<span class="token punctuation">(</span>val_batches <span class="token operator">//</span> <span class="token number">2</span><span class="token punctuation">)</span>                 <span class="token comment"># 跳过前一半，剩下的作为验证集</span>
+
+<span class="token comment"># 4. 最后挂上性能优化外挂</span>
+AUTOTUNE <span class="token operator">=</span> tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>AUTOTUNE
+train_ds <span class="token operator">=</span> train_ds<span class="token punctuation">.</span>prefetch<span class="token punctuation">(</span>buffer_size<span class="token operator">=</span>AUTOTUNE<span class="token punctuation">)</span>
+val_ds <span class="token operator">=</span> val_ds<span class="token punctuation">.</span>prefetch<span class="token punctuation">(</span>buffer_size<span class="token operator">=</span>AUTOTUNE<span class="token punctuation">)</span>
+test_ds <span class="token operator">=</span> test_ds<span class="token punctuation">.</span>prefetch<span class="token punctuation">(</span>buffer_size<span class="token operator">=</span>AUTOTUNE<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="tf-data-功能大全"><code>tf.data</code> 功能大全</h2>
+<h3 id="从各种来源创建数据">从各种来源创建数据</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 从文件夹读图片</span>
+tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>image_dataset_from_directory<span class="token punctuation">(</span>input_dir<span class="token punctuation">,</span>seed<span class="token punctuation">,</span>lable_mode<span class="token punctuation">,</span>img_size<span class="token punctuation">,</span>batch_size<span class="token punctuation">,</span>shuffle<span class="token punctuation">)</span>
+
+<span class="token comment"># 从numpy数组 or Pandas DataFrame创建</span>
+tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>Dataset<span class="token punctuation">.</span>from_tensor_slices<span class="token punctuation">(</span>numpy_array<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="map-对每个数据做处理"><code>map</code>: 对每个数据做处理</h3>
+<p><code>.map(map_func, num_parallel_calls=tf.data.AUTOTUNE)</code> :参数num_parallel_calls 会让 CPU 开启多线程并行处理图片，速度起飞。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#示例像素值归一化, 注意下述ds都表示一个tf.data.Dataset对象</span>
+<span class="token keyword">def</span> <span class="token function">scale_image</span><span class="token punctuation">(</span>image<span class="token punctuation">,</span> label<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    image <span class="token operator">=</span> tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>image<span class="token punctuation">,</span> tf<span class="token punctuation">.</span>float32<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">255.0</span> <span class="token comment"># 注意必须先修改数据浮点类型为float32才能做归一化， tf.cast(原来的张量, dtype=想要的类型)， 复习：numpy里类似的功能是np.astype()</span>
+    <span class="token keyword">return</span> image<span class="token punctuation">,</span> label
+
+dataset <span class="token operator">=</span> dataset<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>scale_image<span class="token punctuation">,</span> num_parallel_calls<span class="token operator">=</span>tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>AUTOTUNE<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="shuffle-打乱数据顺序"><code>shuffle</code> 打乱数据顺序</h3>
+<p><code>.shuffle(buffer_size, seed=None)</code> :buffer_size 的意思是从流水线上先抓取多少个样本放进“搅局池”里。如果你的内存够大，buffer_size 最好等于你的数据集总大小（完全打乱）；如果内存不够，至少要设置一个大于你 batch_size 的数字（比如 1000），因为buffer_size越大，打乱的随机性就越强。</p>
+<p>注意batch_size大小不会影响shuffle, 因为是先打乱再分组，shuffle先batch后，两个步骤相互独立</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>shuffle<span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="batch-对数据分批次"><code>batch</code> 对数据分批次</h3>
+<p><code>.batch(batch_size, drop_remainder=False)</code> :把零散的样本打包成批次送给显卡。<br>
+如果数据集大小不能被 batch_size 整除，最后会剩下一个小尾巴。在某些对尺寸要求极其严格的模型里，可以设置 drop_remainder=True 扔掉这个小尾巴。</p>
+<h3 id="cache-缓存数据（不用反复读硬盘）"><code>cache</code> 缓存数据（不用反复读硬盘）</h3>
+<p>作用：缓存机制。如果你在 .map() 里做了一些非常耗时的操作（比如读取大文件、复杂的解码），.cache() 可以把第一轮（Epoch 1）处理好的数据直接暂存在内存或硬盘里。到了第二轮（Epoch 2），直接从缓存拿，跳过所有计算！</p>
+<p>注意：如果是做随机数据增强（比如每次随机裁剪），千万不要在数据增强前加 .cache()，否则你每个 Epoch 拿到的增强图像都是一模一样的。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>cache<span class="token punctuation">(</span>filename<span class="token operator">=</span><span class="token string">''</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="prefetch-CPU预取数据"><code>prefetch</code> CPU预取数据</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>prefetch<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>AUTOTUNE<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="repeat-数据重复应用"><code>repeat</code> 数据重复应用</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>repeat<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>  <span class="token comment">#数据用5次</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="take-skip-取部分数据">take/skip : 取部分数据</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>take<span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token comment"># 只取ds的前100个数据</span>
+ds <span class="token operator">=</span> ds<span class="token punctuation">.</span>skip<span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token comment"># 跳过ds的前100个数据，只取其剩下的数据</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="tf-data-处理线顺序模板">tf.data 处理线顺序模板</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 黄金流水线模板</span>
+train_dataset <span class="token operator">=</span> <span class="token punctuation">(</span>
+    raw_dataset
+    <span class="token punctuation">.</span>cache<span class="token punctuation">(</span><span class="token punctuation">)</span>                                   <span class="token comment"># 1. 缓存进内存（如果数据不大）</span>
+    <span class="token punctuation">.</span>shuffle<span class="token punctuation">(</span>buffer_size<span class="token operator">=</span><span class="token number">1000</span><span class="token punctuation">,</span> seed<span class="token operator">=</span><span class="token number">88</span><span class="token punctuation">)</span>        <span class="token comment"># 2. 充分打乱</span>
+    <span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>data_augmentation_func<span class="token punctuation">,</span> num_parallel_calls<span class="token operator">=</span>tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>AUTOTUNE<span class="token punctuation">)</span> <span class="token comment"># 3. 图像增强/预处理</span>
+    <span class="token punctuation">.</span>batch<span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">)</span>                                 <span class="token comment"># 4. 打包</span>
+    <span class="token punctuation">.</span>prefetch<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>data<span class="token punctuation">.</span>AUTOTUNE<span class="token punctuation">)</span>                <span class="token comment"># 5. 后台预取</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1>搭建模型</h1>
+<p>模型的搭建可以完全自定义，也可以迁移学习使用keras内部已经预训练好的模型, 位于<code>tf.keras.applications</code>中。注意如果是迁移学习，往往需要修改顶部分类头，使其对应你自己的分类任务。本节给出的是迁移学习使用EfficientNetB0的一个示例。</p>
+<p>在我个人的学习认知里，从使用<code>Sequential</code>将网络层一层层连接搭建起来，再到模型编译（给出优化器、loss等），是一个完整的网络搭建过程。因此这一章节到<code>model.compile()</code>就结束了，<code>model.fit()</code>放在了下一节。</p>
+<p>再深入讲讲tf的底层。事实上，在调用 <code>model.compile</code> 之前，模型只是一堆“静态的层”的组合，它知道数据的形状会怎么变，但它没有灵魂，不知道怎么学习。当调用 compile 时，TensorFlow 在后台做了这些极其关键的工作：</p>
+<ol>
+<li>组装计算图（Computational Graph）：把网络结构、损失函数（Loss）、优化器（Optimizer）用数学公式严密地缝合在一起。</li>
+<li>连接自动求导引擎：告诉 TF 的底层，在反向传播时，应该怎么计算 Loss 对每一个权重的偏导数（梯度）。</li>
+<li>分配内存：为优化器所需的动量（Momentum）和历史梯度（如 Adam 优化器内部的缓存变量）预留好显存空间。<br>
+也因此，只有经过了 compile，模型才从一个“数学公式”变成了一台真正可以启动的“学习机器”。</li>
+</ol>
+<h2 id="keras的内置预训练模型（tf-keras-applications）">keras的内置预训练模型（tf.keras.applications）</h2>
+<p>这一节讲讲深度学习CV领域的发展史：</p>
+<h3 id="AlexNet-2012-深度学习的开山鼻祖">AlexNet (2012) - 深度学习的开山鼻祖</h3>
+<ul>
+<li>
+<p><strong>解决的核心问题</strong>：证明了 “深层卷积神经网络 (CNN) + 大数据 + GPU 加速” 这条路不仅走得通，而且潜力无穷。它首次大规模使用了 ReLU 激活函数（解决了传统的 Sigmoid 函数容易导致梯度消失的问题）和 Dropout 技术（防过拟合）。</p>
+<ul>
+<li>btw, 为什么sigmoid作激活函数容易导致梯度消失呢：<br>
+以一个多层的DNN来说，手推一下利用链式法则求$\partial Loss/\partial w$的过程会发现，当误差反向传播到第一层时，这个梯度计算公式里包含了中间每一个激活函数的导数的累乘。试想一下sigmoid的定义，它在远离原点的位置的导数值是无限接近于0的，以及导数在0处取最大值是0.25。哪怕考虑最理想的情况，如果中间共有n个激活函数，那么梯度传播到首层的一个乘子是$0.25^n$，当网络很深时（即n很大），梯度逼近0，这就是梯度消失。</li>
+</ul>
+</li>
+</ul>
+<h3 id="VGG-系列-VGG16-VGG19-2014">VGG 系列 (VGG16 / VGG19, 2014)</h3>
+<ul>
+<li>
+<p><strong>诞生背景</strong>：大家发现网络越深，效果越好。牛津大学的研究团队（VGG）决定把网络做深。</p>
+</li>
+<li>
+<p><strong>解决的核心问题</strong>：统一了网络设计的“乐高积木”。在此之前，卷积核有大有小（比如 11x11, 7x7）。VGG 证明了全都用最小的 3x3 卷积核堆叠，不仅参数更少，而且能提取更复杂的非线性特征。</p>
+</li>
+<li>
+<p><strong>缺点</strong>：参数量太庞大，非常吃显存，现在多作为学术对比的 Baseline（基线模型）</p>
+</li>
+</ul>
+<h3 id="ResNet-Residual-Network-残差网络-2015">ResNet (Residual Network 残差网络, 2015)</h3>
+<ul>
+<li>
+<p><strong>诞生背景</strong>：由何恺明大牛提出，为了解决梯度消失（Vanishing Gradient）问题。一举横扫了当年的各项视觉大奖。</p>
+</li>
+<li>
+<p><strong>解决的核心问题</strong>：通过引入残差连接 (Skip Connection) 彻底解决了梯度消失问题。它允许信号“抄近道”：如果这一层学不到好东西，就把输入直接越过这一层丢给后面（使得某层的输出变成了 F(x) + x）。这使得训练 152 层甚至上千层的网络成为可能。</p>
+</li>
+<li>
+<p><strong>常用场景</strong>：ResNet50 是工业界最常用、最万金油的特征提取骨干网络（Backbone）。无论是目标检测（YOLO 系列）、图像分割还是医学影像分析，遇事不决先上一套 ResNet50 绝对没错。</p>
+</li>
+</ul>
+<h3 id="MobileNet-系列-2017">MobileNet 系列 (2017+)</h3>
+<ul>
+<li><strong>诞生背景</strong>：网络能做深了，但随之而来的是模型太大，没法部署到手机或边缘设备上。学术界开始卷“性价比”：如何在参数最少的情况下，把准确率拉到最高。</li>
+<li><strong>解决的核心问题</strong>：标准卷积太费算力。MobileNet 发明了“深度可分离卷积 (Depthwise Separable Convolution)”，把一次复杂的空间+通道计算，拆分成两步简单的计算。极大缩减了参数量和运算时间。</li>
+<li><strong>常用场景</strong>：手机端、安防摄像头端、无人机等算力受限的嵌入式设备上的实时图像识别。</li>
+</ul>
+<h3 id="EfficientNet-系列-B0-B7-2019">EfficientNet 系列 (B0 - B7, 2019)</h3>
+<ul>
+<li><strong>诞生背景</strong>：以前大家优化模型，要么只加深（层数），要么只加宽（通道数），要么只放大输入分辨率。Google 的研究员想：能不能同时优化这三个维度的比例？</li>
+<li><strong>解决的核心问题</strong>：提出了一种“复合缩放方法 (Compound Scaling)”。通过一个极其优雅的数学公式，找到了深度、宽度、分辨率三者的黄金比例。</li>
+<li><strong>常用场景</strong>：以轻量、高效闻名，提取医学图像微小病灶的能力极其出色，非常适合配合贝叶斯优化在有限算力下进行反复实验。</li>
+</ul>
+<h3 id="Transformer-2017-BERT-GPT-系列">Transformer (2017) &amp; BERT / GPT 系列</h3>
+<ul>
+<li><strong>诞生背景</strong>：原本是为了解决 NLP（自然语言处理）中 RNN/LSTM 模型无法并行计算、且容易遗忘长上下文的问题（比如翻译长难句）。</li>
+<li><strong>解决的核心问题</strong>：抛弃了传统的序列读取架构，引入了<strong>自注意力机制 (Self-Attention)</strong>。一句话解释就是：模型在看当前词汇时，能瞬间计算出句子中所有其他词汇对当前词汇的影响权重。</li>
+</ul>
+<p>2020 年，ViT (Vision Transformer) 诞生，把图片切成一个个小图块（Patch）当成“单词”喂给 Transformer，证明了在海量数据下，抛弃 CNN 也能在视觉任务上取得惊人的效果。这是目前学术界最前沿的战壕。</p>
+<h2 id="tf-keras-Sequential-自定义拼装模型"><code>tf.keras.Sequential([])</code> 自定义拼装模型</h2>
+<p>把网络层一层层串起来，数据从上到下流转。 比如使用<code>Sequential([])</code>将预训练好的基础底层模型，和自定义的新增其他基础layers串起来。</p>
+<p>常用层：</p>
+<ul>
+<li>
+<p><code>tf.keras.layers.GlobalAveragePooling2D()</code> :<br>
+卷积层提取出的特征是立体的（比如 7x7x1280 的特征图）。以前的做法是把它暴力展平成一维长条，但这会导致参数量爆炸，极易过拟合。GAP 的做法是：对每一个 7x7 的切片求一个平均值。参数量瞬间降为 0，防过拟合。</p>
+</li>
+<li>
+<p><code>tf.keras.layers.Dense(dense_units,...)</code> :<br>
+全连接层，其背后的数学原理其实就是线性变换W*x，由于batch_size个数据是一次性作为输入传入的，所以实际是矩阵乘法x_inputs_matrix * Weight_matrix.</p>
+</li>
+<li>
+<p><code>tf.keras.layers.Dropout(dropout_rate)</code></p>
+</li>
+</ul>
+<h2 id="model-compile-模型编译"><code>model.compile()</code> 模型编译</h2>
+<p>作用：告诉模型怎么学，损失函数是谁？优化算法是什么？学的好不好如何评判？</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">model<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>
+    optimizer<span class="token operator">=</span><span class="token string">"adam"</span><span class="token punctuation">,</span>
+    loss<span class="token operator">=</span>tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>losses<span class="token punctuation">.</span>SparseCategoricalCrossentropy<span class="token punctuation">(</span>from_logits<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    metrics<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"accuracy"</span><span class="token punctuation">]</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>因此有几个关键设定参数，分别是</p>
+<ul>
+<li>
+<p><code>optimizer</code> : 在tf.keras.optimizers里，常用的有Adam,SGD,Adagrad,RMSProp</p>
+</li>
+<li>
+<p><code>loss</code> : 在tf.keras.losses里，注意loss（损失函数） 和 label_mode（标签模式） 之间的强制对应关系。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>label_mode</th>
+<th>标签格式</th>
+<th>必须使用的损失函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int</td>
+<td>整数标签 0,1,2…</td>
+<td>sparse_categorical_crossentropy</td>
+</tr>
+<tr>
+<td>categorical</td>
+<td>one-hot 向量</td>
+<td>categorical_crossentropy</td>
+</tr>
+<tr>
+<td>binary</td>
+<td>0/1 二分类</td>
+<td>binary_crossentropy</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>metrics</code> : 分为分类任务和回归任务</li>
+</ul>
+<p>分类任务：</p>
+<table>
+<thead>
+<tr>
+<th>字符串名称</th>
+<th>对应类</th>
+<th>说明</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>accuracy</code></td>
+<td><code>Accuracy</code></td>
+<td>通用准确率</td>
+<td>标签与输出格式匹配时</td>
+</tr>
+<tr>
+<td><code>binary_accuracy</code></td>
+<td><code>BinaryAccuracy</code></td>
+<td>二分类准确率</td>
+<td>二分类任务</td>
+</tr>
+<tr>
+<td><code>categorical_accuracy</code></td>
+<td><code>CategoricalAccuracy</code></td>
+<td>多分类准确率</td>
+<td>label_mode=“categorical”（one-hot标签）</td>
+</tr>
+<tr>
+<td><code>sparse_categorical_accuracy</code></td>
+<td><code>SparseCategoricalAccuracy</code></td>
+<td>稀疏多分类准确率</td>
+<td>label_mode=“int”（整数标签）</td>
+</tr>
+<tr>
+<td><code>precision</code></td>
+<td><code>Precision</code></td>
+<td>精确率</td>
+<td>二分类/多分类</td>
+</tr>
+<tr>
+<td><code>recall</code></td>
+<td><code>Recall</code></td>
+<td>召回率</td>
+<td>二分类/多分类</td>
+</tr>
+<tr>
+<td><code>auc</code></td>
+<td><code>AUC</code></td>
+<td>AUC曲线面积</td>
+<td>二分类、样本不均衡</td>
+</tr>
+<tr>
+<td><code>f1_score</code></td>
+<td><code>F1Score</code></td>
+<td>F1分数</td>
+<td>综合精确率与召回率</td>
+</tr>
+</tbody>
+</table>
+<p>回归任务：</p>
+<table>
+<thead>
+<tr>
+<th>字符串名称</th>
+<th>对应类</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mse</code></td>
+<td><code>MeanSquaredError</code></td>
+<td>均方误差</td>
+</tr>
+<tr>
+<td><code>mae</code></td>
+<td><code>MeanAbsoluteError</code></td>
+<td>平均绝对误差</td>
+</tr>
+<tr>
+<td><code>rmse</code></td>
+<td><code>RootMeanSquaredError</code></td>
+<td>均方根误差</td>
+</tr>
+<tr>
+<td><code>mape</code></td>
+<td><code>MeanAbsolutePercentageError</code></td>
+<td>平均绝对百分比误差</td>
+</tr>
+</tbody>
+</table>
+<h2 id="完整示例代码">完整示例代码</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tensorflow <span class="token keyword">as</span> tf
+<span class="token keyword">from</span> tensorflow <span class="token keyword">import</span> keras
+<span class="token keyword">from</span> keras <span class="token keyword">import</span> layers<span class="token punctuation">,</span> regularizers
+
+<span class="token keyword">def</span> <span class="token function">build_pretrained_model</span><span class="token punctuation">(</span>hparams<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># 1. 加载预训练的EfficientNet，不包含顶部的分类层</span>
+    base_model <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>applications<span class="token punctuation">.</span>EfficientNetB0<span class="token punctuation">(</span>
+        input_shape<span class="token operator">=</span><span class="token punctuation">(</span>IMG_HEIGHT<span class="token punctuation">,</span> IMG_WIDTH<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        include_top<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span>
+        weights<span class="token operator">=</span><span class="token string">'imagenet'</span>
+    <span class="token punctuation">)</span>
+    <span class="token comment"># 2. 冻结预训练模型的权重</span>
+    base_model<span class="token punctuation">.</span>trainable <span class="token operator">=</span> <span class="token boolean">False</span>
+    
+    <span class="token comment"># 3. 确定从哪个块开始解冻（微调）</span>
+    fine_tune_at_block <span class="token operator">=</span> <span class="token string">'block5a_expand_conv'</span>
+    <span class="token comment">#  遍历所有层，解冻 fine_tune_at_block 及之后的所有层</span>
+    set_trainable <span class="token operator">=</span> <span class="token boolean">False</span>
+    <span class="token keyword">for</span> layer <span class="token keyword">in</span> base_model<span class="token punctuation">.</span>layers<span class="token punctuation">:</span>
+        <span class="token keyword">if</span> layer<span class="token punctuation">.</span>name <span class="token operator">==</span> fine_tune_at_block<span class="token punctuation">:</span>
+            set_trainable <span class="token operator">=</span> <span class="token boolean">True</span>
+        <span class="token keyword">if</span> set_trainable<span class="token punctuation">:</span>
+            layer<span class="token punctuation">.</span>trainable <span class="token operator">=</span> <span class="token boolean">True</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            layer<span class="token punctuation">.</span>trainable <span class="token operator">=</span> <span class="token boolean">False</span>
+
+    <span class="token comment"># 注意： 无论是否解冻，都应该保持 BatchNormalization 层处于冻结状态</span>
+    <span class="token comment"># isinstance(对象, 类) → 判断对象是不是这个类型</span>
+    <span class="token keyword">for</span> layer <span class="token keyword">in</span> base_model<span class="token punctuation">.</span>layers<span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token builtin">isinstance</span><span class="token punctuation">(</span>layer<span class="token punctuation">,</span> layers<span class="token punctuation">.</span>BatchNormalization<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            layer<span class="token punctuation">.</span>trainable <span class="token operator">=</span> <span class="token boolean">False</span>
+    <span class="token comment">#     等价于：</span>
+    <span class="token comment">#     if not isinstance(layer, layers.BatchNormalization):</span>
+    <span class="token comment">#         layer.trainable = True</span>
+            
+    <span class="token comment"># 动态传入参数：从hparams列表中调用.get(a,b)方法安全取参数;a存在就取a的值，a不存在就取值b</span>
+    dense_units <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'dense_units'</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    dropout_rate <span class="token operator">=</span> hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'dropout_rate'</span><span class="token punctuation">,</span> <span class="token number">0.5</span><span class="token punctuation">)</span>
+    l2_reg <span class="token operator">=</span> hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'l2_reg'</span><span class="token punctuation">,</span> <span class="token number">0.001</span><span class="token punctuation">)</span>
+    lr <span class="token operator">=</span> hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'lr'</span><span class="token punctuation">,</span> <span class="token number">0.0001</span><span class="token punctuation">)</span>
+    optimizer_choice <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'optimizer_choice'</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    momentum <span class="token operator">=</span> hparams<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'momentum'</span><span class="token punctuation">,</span> <span class="token number">0.9</span><span class="token punctuation">)</span>
+    
+    
+    <span class="token comment"># 4. 在预训练模型之上，构建一个分类头</span>
+    model <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>Sequential<span class="token punctuation">(</span><span class="token punctuation">[</span>
+        base_model<span class="token punctuation">,</span>
+        layers<span class="token punctuation">.</span>GlobalAveragePooling2D<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment"># 使用全局平均池化替代Flatten，参数更少，不易过拟合</span>
+        layers<span class="token punctuation">.</span>Dense<span class="token punctuation">(</span>dense_units<span class="token punctuation">,</span> activation<span class="token operator">=</span><span class="token string">'relu'</span><span class="token punctuation">,</span> kernel_regularizer<span class="token operator">=</span>regularizers<span class="token punctuation">.</span>l2<span class="token punctuation">(</span>l2_reg<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment"># 使用更小的L2值</span>
+        layers<span class="token punctuation">.</span>Dropout<span class="token punctuation">(</span>dropout_rate<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        layers<span class="token punctuation">.</span>Dense<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> activation<span class="token operator">=</span><span class="token string">'softmax'</span><span class="token punctuation">)</span> <span class="token comment"># 4个类别</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+   
+    <span class="token keyword">if</span> optimizer_choice <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"--- 使用 Adam 优化器 ---"</span><span class="token punctuation">)</span>
+        optimizer <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>optimizers<span class="token punctuation">.</span>Adam<span class="token punctuation">(</span>learning_rate<span class="token operator">=</span>lr<span class="token punctuation">)</span>
+    <span class="token keyword">elif</span> optimizer_choice <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"--- 使用 SGD 优化器 (momentum=</span><span class="token interpolation"><span class="token punctuation">&#123;</span>momentum<span class="token punctuation">:</span><span class="token format-spec">.3f</span><span class="token punctuation">&#125;</span></span><span class="token string">) ---"</span></span><span class="token punctuation">)</span>
+        optimizer <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>optimizers<span class="token punctuation">.</span>SGD<span class="token punctuation">(</span>learning_rate<span class="token operator">=</span>lr<span class="token punctuation">,</span> momentum<span class="token operator">=</span>momentum<span class="token punctuation">)</span>
+    <span class="token keyword">elif</span> optimizer_choice <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"--- 使用 RMSprop 优化器 ---"</span><span class="token punctuation">)</span>
+        optimizer <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>optimizers<span class="token punctuation">.</span>RMSprop<span class="token punctuation">(</span>learning_rate<span class="token operator">=</span>lr<span class="token punctuation">)</span>
+    <span class="token keyword">elif</span> optimizer_choice <span class="token operator">==</span><span class="token number">3</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"--- 使用 Adagrad 优化器 ---"</span><span class="token punctuation">)</span>
+        optimizer <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>optimizers<span class="token punctuation">.</span>Adagrad<span class="token punctuation">(</span>learning_rate<span class="token operator">=</span>lr<span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span> <span class="token comment"># optimizer_choice == 分数</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"--- 无法找到对应的优化器，请检查optimizer_choice value ---"</span><span class="token punctuation">)</span>
+        
+    
+    model<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>
+        optimizer<span class="token operator">=</span>optimizer<span class="token punctuation">,</span>
+        <span class="token comment">#loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),</span>
+        <span class="token comment">#from_logits=True 表示：模型最后一层不应用 softmax 激活函数，直接输出原始分数（logits）</span>
+        loss<span class="token operator">=</span><span class="token string">'sparse_categorical_crossentropy'</span><span class="token punctuation">,</span>
+        metrics<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'accuracy'</span><span class="token punctuation">]</span>
+    <span class="token punctuation">)</span>
+   
+    <span class="token keyword">return</span> model<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1><code>model.fit()</code> 训练模型</h1>
+<p>负责以下流程：前向传播 -&gt; 计算 Loss -&gt; 反向传播求梯度 -&gt; 优化器更新权重</p>
+<p>训练完train_ds中已经划分好的全部batches（每个batch有batch_size张图片）之后，就完成了一个<code>epoch</code>(轮次)的训练，而深度神经网络需要多次重复上述流程，才能找到最优权重。因此<code>epochs</code>就表示进行多少个完整轮次的训练。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">history <span class="token operator">=</span> model<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>
+        train_ds<span class="token punctuation">,</span> <span class="token comment"># 指定训练数据集(必需参数)</span>
+         <span class="token comment"># 验证数据集(可选参数)在每个epoch结束后，模型会在这个数据集上评估性能,这里因为设置了早停回调器，因此实际上是必选参数</span>
+        validation_data<span class="token operator">=</span>val_ds<span class="token punctuation">,</span>
+        epochs<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">,</span> <span class="token comment"># 遍历训练数据的总轮次(必需参数)</span>
+        verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token comment">#日志显示模式,设置为0时,通常是因为使用了自定义回调函数来显示更详细的信息</span>
+        callbacks<span class="token operator">=</span><span class="token punctuation">[</span>early_stopping_callback<span class="token punctuation">]</span>
+    <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>训练结束（跑完全部30个epoch之后），需要对模型进行最终的测算，比如在val_ds上返回的结果loss,accuracy：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 让模型在验证集 val_ds 上再完整跑一遍，并返回最终的成绩</span>
+loss<span class="token punctuation">,</span> accuracy <span class="token operator">=</span> model<span class="token punctuation">.</span>evaluate<span class="token punctuation">(</span>val_ds<span class="token punctuation">,</span> verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>❓这里为什么要再在val_ds上评估一次呢？按照前面model.fit()中我们已经选择了validation_data这个参数，那么实际上每一个epoch结束模型就已经在val_ds上评估了，早停机制不是已经记录了历史最高分吗？直接把那个分数 return 回去不就行了？</p>
+<p>解答这个问题，需要了解什么是回调器（callbacks），见下一节。</p>
+<h1><code>tf.keras.callbacks</code> 训练动态分析（回调函数）</h1>
+<p>默认情况下，model.fit 是一个“黑盒”，一旦运行，除非跑完设定的 epochs，否则很难人为干预。而 Callbacks  提供了一系列的干预节点，允许我们在训练的各个特定生命周期节点（比如每个 batch 开始时、每个 epoch 结束时）强行介入，执行你想要的操作。除了上面的 EarlyStopping，常用的还有 ModelCheckpoint（自动保存模型硬盘文件）和 ReduceLROnPlateau（遇到瓶颈自动降低学习率）。</p>
+<p>💡先回答上一节最后的问题：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 这个定义块实际上是置于model.fit()之前的</span>
+early_stopping_callback <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>EarlyStopping<span class="token punctuation">(</span>
+        monitor<span class="token operator">=</span><span class="token string">'val_accuracy'</span><span class="token punctuation">,</span> <span class="token comment"># 衡量指标</span>
+        patience<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span>  <span class="token comment"># 验证集准确率连续5个epoch没有提升就停止</span>
+        min_delta<span class="token operator">=</span><span class="token number">0.005</span><span class="token punctuation">,</span>
+        restore_best_weights<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token comment"># 关键：自动恢复到性能最好的那个epoch的权重</span>
+        verbose<span class="token operator">=</span><span class="token number">0</span> <span class="token comment"># 在epoch循环中保持安静</span>
+    <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里面隐藏着一个非常优雅的代码闭环逻辑，也是你代码里 <code>restore_best_weights=True</code> 真正发威的地方：假设模型跑了 20 个 epoch，其中第 15 个 epoch 的 val_accuracy 最高（比如 0.985）。第 16-20 个 epoch 模型开始变笨，准确率下降。由于 <code>patience=5</code>，模型在第 20 轮被早停强制掐断。因为我设置了 <code>restore_best_weights=True</code>，TensorFlow 会在掐断的瞬间，施展“时光倒流”，把模型的权重替换回第 15 轮那个最聪明的状态！此时，model 已经是巅峰状态的身体了。但贝叶斯优化器还在外面等着要一个最终确切的跑分（即目标函数 $g(h)$ 的返回值）。于是，需要用巅峰状态的模型，再跑一次 model.evaluate(val_ds)，拿到绝对精确的最优解 accuracy，并将这个值 return 给外层的贝叶斯优化器。</p>
+<p>完整代码：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">train_and_evaluate_model</span><span class="token punctuation">(</span>hparams<span class="token punctuation">,</span>train_ds<span class="token punctuation">,</span>val_ds<span class="token punctuation">,</span>epochs<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    model <span class="token operator">=</span> build_pretrained_model<span class="token punctuation">(</span>hparams<span class="token punctuation">)</span> 
+    early_stopping_callback <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>EarlyStopping<span class="token punctuation">(</span>
+        monitor<span class="token operator">=</span><span class="token string">'val_accuracy'</span><span class="token punctuation">,</span>
+        patience<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span>  
+        min_delta<span class="token operator">=</span><span class="token number">0.005</span><span class="token punctuation">,</span>
+        restore_best_weights<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+        verbose<span class="token operator">=</span><span class="token number">0</span> 
+    <span class="token punctuation">)</span>
+
+    history <span class="token operator">=</span> model<span class="token punctuation">.</span>fit<span class="token punctuation">(</span>
+        train_ds<span class="token punctuation">,</span>
+        validation_data<span class="token operator">=</span>val_ds<span class="token punctuation">,</span>
+        epochs<span class="token operator">=</span>epochs<span class="token punctuation">,</span>
+        verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>
+        callbacks<span class="token operator">=</span><span class="token punctuation">[</span>early_stopping_callback<span class="token punctuation">]</span>
+    <span class="token punctuation">)</span>
+
+    loss<span class="token punctuation">,</span> accuracy <span class="token operator">=</span> model<span class="token punctuation">.</span>evaluate<span class="token punctuation">(</span>val_ds<span class="token punctuation">,</span> verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+    best_epoch_num <span class="token operator">=</span> early_stopping_callback<span class="token punctuation">.</span>best_epoch <span class="token operator">+</span> <span class="token number">1</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"  > 训练评估完成: Best Val Acc: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>accuracy<span class="token punctuation">:</span><span class="token format-spec">.4f</span><span class="token punctuation">&#125;</span></span><span class="token string">, 对应的 Loss:</span><span class="token interpolation"><span class="token punctuation">&#123;</span>loss<span class="token punctuation">:</span><span class="token format-spec">.4f</span><span class="token punctuation">&#125;</span></span><span class="token string">(at epoch </span><span class="token interpolation"><span class="token punctuation">&#123;</span>best_epoch_num<span class="token punctuation">&#125;</span></span><span class="token string">)"</span></span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">return</span> accuracy<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="TF核心的四大回调函数介绍">TF核心的四大回调函数介绍</h2>
+<h3 id="ModelCheckpoint-：游戏自动存档机制"><code>ModelCheckpoint</code> ：游戏自动存档机制</h3>
+<p>当训练一个庞大的模型需要长时间运行时，如果过程中突然断电，没有存档的话，前面的运行时间将彻底白费。</p>
+<ul>
+<li><strong>作用</strong>：在训练过程中按照一定频率自动把模型（或权重）保存到硬盘上。</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">checkpoint_cb <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>ModelCheckpoint<span class="token punctuation">(</span>
+    filepath<span class="token operator">=</span><span class="token string">'best_model.h5'</span><span class="token punctuation">,</span> <span class="token comment"># 保存的文件路径</span>
+    monitor<span class="token operator">=</span><span class="token string">'val_accuracy'</span><span class="token punctuation">,</span>   <span class="token comment"># 盯着验证集准确率</span>
+    save_best_only<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>      <span class="token comment"># 核心参数：只有当这次的成绩打破历史最高分时，才覆盖保存！</span>
+    save_weights_only<span class="token operator">=</span><span class="token boolean">False</span>   <span class="token comment"># False表示连带网络结构一起存，True表示只存权重字典</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="ReduceLROnPlateau：只能调控学习率"><code>ReduceLROnPlateau</code>：只能调控学习率</h3>
+<ul>
+<li><strong>作用</strong>：当监控的指标（如验证集 Loss）在几个 epoch 内都没有下降时，自动把学习率（Learning Rate）调小，让模型迈着更细碎的步子去寻找最优解。</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">lr_scheduler <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>ReduceLROnPlateau<span class="token punctuation">(</span>
+    monitor<span class="token operator">=</span><span class="token string">'val_loss'</span><span class="token punctuation">,</span> 
+    factor<span class="token operator">=</span><span class="token number">0.1</span><span class="token punctuation">,</span>   <span class="token comment"># 核心参数：每次触发时，学习率乘以 0.1（即缩小 10 倍）</span>
+    patience<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>   <span class="token comment"># 容忍度：如果连续 3 个 epoch 没进步，就触发降速</span>
+    min_lr<span class="token operator">=</span><span class="token number">1e-6</span>   <span class="token comment"># 学习率的底线，不能无限小下去</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="EarlyStopping-早停监测器"><code>EarlyStopping</code> : 早停监测器</h3>
+<p>防止过拟合（Overfitting），并节省宝贵的 GPU 算力。永远记得开启 <code>restore_best_weights=True</code>!</p>
+<h3 id="TensorBoard">TensorBoard</h3>
+<p><strong>作用</strong>：将训练过程中的 Loss 曲线、Accuracy 曲线、甚至是每一层网络权重的直方图分布，全部记录并渲染成极其漂亮的交互式网页图表。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">tensorboard_cb <span class="token operator">=</span> tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>TensorBoard<span class="token punctuation">(</span>
+    log_dir<span class="token operator">=</span><span class="token string">'./logs'</span><span class="token punctuation">,</span>        <span class="token comment"># 日志保存的文件夹</span>
+    histogram_freq<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>        <span class="token comment"># 每隔 1 个 epoch 记录一次权重和梯度的直方图</span>
+    write_images<span class="token operator">=</span><span class="token boolean">False</span>       <span class="token comment"># 是否将模型权重作为图片可视化</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="自定义回调">自定义回调</h3>
+<p>在 TF 中，如果你觉得自带的工具不够用（比如你想在模型准确率突破 99% 时，自动给你发一封微信通知邮件），你可以继承 tf.keras.callbacks.Callback 自己写一个：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">MyCustomCallback</span><span class="token punctuation">(</span>tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>callbacks<span class="token punctuation">.</span>Callback<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">on_epoch_end</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> epoch<span class="token punctuation">,</span> logs<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 这个方法会在每个 epoch 结束的瞬间被 TF 自动触发</span>
+        <span class="token keyword">if</span> logs<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'val_accuracy'</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0.99</span><span class="token punctuation">:</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"\n🎉 帅呆了！Epoch </span><span class="token interpolation"><span class="token punctuation">&#123;</span>epoch<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">&#125;</span></span><span class="token string"> 准确率破 99% 啦！"</span></span><span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>model<span class="token punctuation">.</span>stop_training <span class="token operator">=</span> <span class="token boolean">True</span> <span class="token comment"># 手动强行中止训练</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1>插言</h1>
+<p>到这一节止， 使用TF架构完成一个深度学习的项目的必备内容已经学会。以下的内容是整理我博士期间的第一个超参数调优的课题中的代码，涉及更多的数理统计知识，尤其是贝叶斯优化。</p>
+<h1>贝叶斯优化器</h1>
+<p>先附上自定义的这个贝叶斯类的完整代码：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token comment">#... 这里需要加载的包先不管，只关注优化器类本身</span>
+<span class="token keyword">class</span> <span class="token class-name">BayesianOptimizer</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>search_space<span class="token punctuation">,</span>init_points<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span>log_file<span class="token operator">=</span><span class="token string">"HMC_bo_log.json"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>search_space <span class="token operator">=</span> np<span class="token punctuation">.</span>array<span class="token punctuation">(</span>search_space<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>dim <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>search_space<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>theta_dim <span class="token operator">=</span> self<span class="token punctuation">.</span>dim <span class="token operator">+</span> <span class="token number">2</span> 
+        self<span class="token punctuation">.</span>init_points <span class="token operator">=</span> init_points
+        self<span class="token punctuation">.</span>log_file<span class="token operator">=</span>log_file
+
+        <span class="token comment"># 初始化观测点集合</span>
+        self<span class="token punctuation">.</span>X_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span>self<span class="token punctuation">.</span>dim<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>y_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># 清空内存中同命名的旧日志文件</span>
+        <span class="token keyword">if</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>exists<span class="token punctuation">(</span>self<span class="token punctuation">.</span>log_file<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            os<span class="token punctuation">.</span>remove<span class="token punctuation">(</span>self<span class="token punctuation">.</span>log_file<span class="token punctuation">)</span>
+        
+        <span class="token comment"># HMC采样时的必需参数</span>
+        self<span class="token punctuation">.</span>num_samples<span class="token operator">=</span><span class="token number">20</span>
+        self<span class="token punctuation">.</span>burn_in<span class="token operator">=</span><span class="token number">100</span>
+
+    <span class="token keyword">def</span> <span class="token function">random_sample</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> np<span class="token punctuation">.</span>array<span class="token punctuation">(</span><span class="token punctuation">[</span>np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>uniform<span class="token punctuation">(</span>low<span class="token punctuation">,</span> high<span class="token punctuation">)</span> <span class="token keyword">for</span> <span class="token punctuation">(</span>low<span class="token punctuation">,</span> high<span class="token punctuation">)</span> <span class="token keyword">in</span> self<span class="token punctuation">.</span>search_space<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">_write_log</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>iteration<span class="token punctuation">,</span>x_new<span class="token punctuation">,</span>y_new<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        param_names<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'lr'</span><span class="token punctuation">,</span><span class="token string">'dense_units'</span><span class="token punctuation">,</span><span class="token string">'dropout_rate'</span><span class="token punctuation">,</span><span class="token string">'l2_reg'</span><span class="token punctuation">,</span><span class="token string">'optimizer_choice'</span><span class="token punctuation">,</span><span class="token string">'momentum'</span><span class="token punctuation">]</span>
+        params_dict<span class="token operator">=</span><span class="token punctuation">&#123;</span>name<span class="token punctuation">:</span>val <span class="token keyword">for</span> name<span class="token punctuation">,</span>val <span class="token keyword">in</span> <span class="token builtin">zip</span><span class="token punctuation">(</span>param_names<span class="token punctuation">,</span>x_new<span class="token punctuation">)</span><span class="token punctuation">&#125;</span>
+        log_entry<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">'iteration'</span><span class="token punctuation">:</span><span class="token builtin">int</span><span class="token punctuation">(</span>iteration<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'accuracy'</span><span class="token punctuation">:</span><span class="token builtin">float</span><span class="token punctuation">(</span>y_new<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'params'</span><span class="token punctuation">:</span>params_dict<span class="token punctuation">&#125;</span>
+        <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>log_file<span class="token punctuation">,</span><span class="token string">'a'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+            f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>json<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>log_entry<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+        
+    <span class="token comment"># 实现HMC采样选出self.num_samples个theta</span>
+    <span class="token comment"># 流程：先计算theta后验分布，通过假设theta的先验是均匀分布，从而等价于p(y|x,theta)，而这需要先算出协方差核</span>
+    <span class="token keyword">def</span> <span class="token function">matern52_kernel</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>X1<span class="token punctuation">,</span>X2<span class="token punctuation">,</span>theta<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        X1<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>X1<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        X2<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>X2<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        theta<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>theta<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        length_scale<span class="token operator">=</span>theta<span class="token punctuation">[</span><span class="token punctuation">:</span>self<span class="token punctuation">.</span>dim<span class="token punctuation">]</span>
+        amplitude<span class="token operator">=</span>theta<span class="token punctuation">[</span>self<span class="token punctuation">.</span>dim<span class="token punctuation">]</span>
+        X1_scaled<span class="token operator">=</span>X1<span class="token operator">/</span>length_scale
+        X2_scaled<span class="token operator">=</span>X2<span class="token operator">/</span>length_scale
+        <span class="token comment"># 计算距离矩阵的平方时，分成三部分：|X1|**2 -2*X1*X2.T +|X2|**2, 注意广播机制中1的处理，通过keepdims参数控制</span>
+        term1<span class="token operator">=</span>tf<span class="token punctuation">.</span>reduce_sum<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>square<span class="token punctuation">(</span>X1_scaled<span class="token punctuation">)</span><span class="token punctuation">,</span>axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>keepdims<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+        <span class="token comment"># term2=-2*X1_scaled@X2_scaled.T tf张量无.T属性</span>
+        term2 <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">2</span> <span class="token operator">*</span> X1_scaled @ tf<span class="token punctuation">.</span>transpose<span class="token punctuation">(</span>X2_scaled<span class="token punctuation">)</span>
+        term3<span class="token operator">=</span>tf<span class="token punctuation">.</span>reduce_sum<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>square<span class="token punctuation">(</span>X2_scaled<span class="token punctuation">)</span><span class="token punctuation">,</span>axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>keepdims<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
+        r2<span class="token operator">=</span>term1<span class="token operator">+</span>term2<span class="token operator">+</span>term3
+        <span class="token comment">#防止距离矩阵中元素出现负数</span>
+        r2<span class="token operator">=</span>tf<span class="token punctuation">.</span>maximum<span class="token punctuation">(</span>r2<span class="token punctuation">,</span><span class="token number">1e-12</span><span class="token punctuation">)</span>
+        r<span class="token operator">=</span>tf<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>r2<span class="token punctuation">)</span>
+        <span class="token comment"># 求协方差核矩阵，注意tf严格限制张量乘法的张量dtype必须一致,python原生数可以和张量运算通过</span>
+        five_64 <span class="token operator">=</span> tf<span class="token punctuation">.</span>constant<span class="token punctuation">(</span><span class="token number">5.0</span><span class="token punctuation">,</span> dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        sqrt_5<span class="token operator">=</span>tf<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>five_64<span class="token punctuation">)</span>
+        term<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">1.0</span><span class="token operator">+</span>sqrt_5<span class="token operator">*</span>r<span class="token operator">+</span><span class="token punctuation">(</span><span class="token number">5.0</span><span class="token operator">/</span><span class="token number">3.0</span><span class="token punctuation">)</span><span class="token operator">*</span>r2<span class="token punctuation">)</span><span class="token operator">*</span>tf<span class="token punctuation">.</span>exp<span class="token punctuation">(</span><span class="token operator">-</span>sqrt_5<span class="token operator">*</span>r<span class="token punctuation">)</span>
+        K<span class="token operator">=</span>amplitude<span class="token operator">**</span><span class="token number">2</span><span class="token operator">*</span>term
+        <span class="token keyword">return</span> K
+
+
+    <span class="token keyword">def</span> <span class="token function">log_posterior</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>theta<span class="token punctuation">,</span>X<span class="token punctuation">,</span>y<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        X<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>X<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        y<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>y<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        theta<span class="token operator">=</span>tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>theta<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        noise<span class="token operator">=</span>theta<span class="token punctuation">[</span>self<span class="token punctuation">.</span>dim<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">**</span><span class="token number">2</span>
+        K<span class="token operator">=</span>self<span class="token punctuation">.</span>matern52_kernel<span class="token punctuation">(</span>X<span class="token punctuation">,</span> X<span class="token punctuation">,</span> theta<span class="token punctuation">)</span>
+        n <span class="token operator">=</span> tf<span class="token punctuation">.</span>shape<span class="token punctuation">(</span>K<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        n_64 <span class="token operator">=</span> tf<span class="token punctuation">.</span>cast<span class="token punctuation">(</span>n<span class="token punctuation">,</span> tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        
+        K<span class="token operator">+=</span><span class="token punctuation">(</span>noise<span class="token operator">+</span> <span class="token number">1e-6</span><span class="token punctuation">)</span><span class="token operator">*</span>tf<span class="token punctuation">.</span>eye<span class="token punctuation">(</span>n<span class="token punctuation">,</span>dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        <span class="token comment"># 计算inv(K)时采用choleskey分解,令alpha=inv(K)@y</span>
+        L<span class="token operator">=</span>tf<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>cholesky<span class="token punctuation">(</span>K<span class="token punctuation">)</span>
+        alpha<span class="token operator">=</span>tf<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>cholesky_solve<span class="token punctuation">(</span>L<span class="token punctuation">,</span>tf<span class="token punctuation">.</span>expand_dims<span class="token punctuation">(</span>y<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        log_lik<span class="token operator">=</span>tf<span class="token punctuation">.</span>squeeze<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">0.5</span><span class="token operator">*</span>tf<span class="token punctuation">.</span>expand_dims<span class="token punctuation">(</span>y<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>@alpha<span class="token punctuation">)</span>
+        log_lik<span class="token operator">-=</span>tf<span class="token punctuation">.</span>reduce_sum<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>math<span class="token punctuation">.</span>log<span class="token punctuation">(</span>tf<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>diag_part<span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        pi_const <span class="token operator">=</span> tf<span class="token punctuation">.</span>constant<span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> np<span class="token punctuation">.</span>pi<span class="token punctuation">,</span> dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span>
+        log_lik<span class="token operator">-=</span><span class="token number">0.5</span> <span class="token operator">*</span> n_64 <span class="token operator">*</span> tf<span class="token punctuation">.</span>math<span class="token punctuation">.</span>log<span class="token punctuation">(</span>pi_const<span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> log_lik
+
+    <span class="token keyword">def</span> <span class="token function">sample_theta_posterior</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">def</span> <span class="token function">target_fn</span><span class="token punctuation">(</span>theta<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>log_posterior<span class="token punctuation">(</span>theta<span class="token punctuation">,</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span>self<span class="token punctuation">.</span>y_obs<span class="token punctuation">)</span>
+        kernel<span class="token operator">=</span>tfp<span class="token punctuation">.</span>mcmc<span class="token punctuation">.</span>HamiltonianMonteCarlo<span class="token punctuation">(</span>
+            target_log_prob_fn<span class="token operator">=</span>target_fn<span class="token punctuation">,</span>
+            num_leapfrog_steps<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span>
+            step_size<span class="token operator">=</span><span class="token number">0.1</span><span class="token punctuation">)</span>
+        
+        samples<span class="token operator">=</span>tfp<span class="token punctuation">.</span>mcmc<span class="token punctuation">.</span>sample_chain<span class="token punctuation">(</span>
+            num_results<span class="token operator">=</span>self<span class="token punctuation">.</span>num_samples<span class="token punctuation">,</span>
+            current_state<span class="token operator">=</span>tf<span class="token punctuation">.</span>ones<span class="token punctuation">(</span>self<span class="token punctuation">.</span>theta_dim<span class="token punctuation">,</span> dtype<span class="token operator">=</span>tf<span class="token punctuation">.</span>float64<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            kernel<span class="token operator">=</span>kernel<span class="token punctuation">,</span>
+            num_burnin_steps<span class="token operator">=</span>self<span class="token punctuation">.</span>burn_in<span class="token punctuation">,</span>
+            trace_fn<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> samples<span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">expected_improvement</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>x_candidate<span class="token punctuation">,</span>theta_samples<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>y_obs<span class="token punctuation">.</span>size <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">1.0</span>
+        
+        y_best <span class="token operator">=</span> np<span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>y_obs<span class="token punctuation">)</span>
+        x_candidate_reshaped <span class="token operator">=</span> x_candidate<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+        
+        ei_values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> theta <span class="token keyword">in</span> theta_samples<span class="token punctuation">:</span>
+            <span class="token keyword">try</span><span class="token punctuation">:</span>
+                <span class="token comment"># 将theta转为numpy，因为下面的计算在numpy中进行</span>
+                theta_np <span class="token operator">=</span> theta<span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">if</span> <span class="token builtin">hasattr</span><span class="token punctuation">(</span>theta<span class="token punctuation">,</span> <span class="token string">'numpy'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> theta
+                
+                K_obs <span class="token operator">=</span> self<span class="token punctuation">.</span>matern52_kernel<span class="token punctuation">(</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span> self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span> theta_np<span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                noise <span class="token operator">=</span> theta_np<span class="token punctuation">[</span>self<span class="token punctuation">.</span>dim <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">**</span><span class="token number">2</span>
+                K_obs <span class="token operator">+=</span> <span class="token punctuation">(</span>noise <span class="token operator">+</span> <span class="token number">1e-6</span><span class="token punctuation">)</span> <span class="token operator">*</span> np<span class="token punctuation">.</span>eye<span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                
+                K_cross <span class="token operator">=</span> self<span class="token punctuation">.</span>matern52_kernel<span class="token punctuation">(</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span> x_candidate_reshaped<span class="token punctuation">,</span> theta_np<span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                K_candidate <span class="token operator">=</span> self<span class="token punctuation">.</span>matern52_kernel<span class="token punctuation">(</span>x_candidate_reshaped<span class="token punctuation">,</span> x_candidate_reshaped<span class="token punctuation">,</span> theta_np<span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                L <span class="token operator">=</span> np<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>cholesky<span class="token punctuation">(</span>K_obs<span class="token punctuation">)</span>
+                L_inv_K_cross <span class="token operator">=</span> np<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>solve<span class="token punctuation">(</span>L<span class="token punctuation">,</span> K_cross<span class="token punctuation">)</span>
+                
+                mu <span class="token operator">=</span> np<span class="token punctuation">.</span>dot<span class="token punctuation">(</span>L_inv_K_cross<span class="token punctuation">.</span>T<span class="token punctuation">,</span> np<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>solve<span class="token punctuation">(</span>L<span class="token punctuation">,</span> self<span class="token punctuation">.</span>y_obs<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                sigma2 <span class="token operator">=</span> K_candidate <span class="token operator">-</span> np<span class="token punctuation">.</span>dot<span class="token punctuation">(</span>L_inv_K_cross<span class="token punctuation">.</span>T<span class="token punctuation">,</span> L_inv_K_cross<span class="token punctuation">)</span>
+
+                <span class="token comment">#将 mu 和 sigma2 转换为标量</span>
+                <span class="token comment"># mu 是 (1,) 形状的一维数组, 用 [0] 提取</span>
+                mu_scalar <span class="token operator">=</span> mu<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+                <span class="token comment"># sigma2 是 (1,1) 形状的二维数组, 用 [0,0] 提取</span>
+                sigma2_scalar <span class="token operator">=</span> sigma2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span>
+                
+                sigma <span class="token operator">=</span> np<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>np<span class="token punctuation">.</span>maximum<span class="token punctuation">(</span>sigma2_scalar<span class="token punctuation">,</span> <span class="token number">1e-9</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token comment"># 如果 sigma 过小，则此点没有不确定性，EI为0</span>
+                <span class="token keyword">if</span> sigma <span class="token operator">==</span> <span class="token number">0.0</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+
+                z <span class="token operator">=</span> <span class="token punctuation">(</span>mu_scalar <span class="token operator">-</span> y_best <span class="token operator">-</span> self<span class="token punctuation">.</span>exploration<span class="token punctuation">)</span> <span class="token operator">/</span> sigma
+                
+                norm <span class="token operator">=</span> stats<span class="token punctuation">.</span>norm<span class="token punctuation">(</span>loc<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> scale<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+                ei <span class="token operator">=</span> <span class="token punctuation">(</span>mu_scalar <span class="token operator">-</span> y_best <span class="token operator">-</span> self<span class="token punctuation">.</span>exploration<span class="token punctuation">)</span> <span class="token operator">*</span> norm<span class="token punctuation">.</span>cdf<span class="token punctuation">(</span>z<span class="token punctuation">)</span> <span class="token operator">+</span> sigma <span class="token operator">*</span> norm<span class="token punctuation">.</span>pdf<span class="token punctuation">(</span>z<span class="token punctuation">)</span>
+                
+                <span class="token comment"># 确保 ei 是一个正常的浮点数</span>
+                <span class="token keyword">if</span> <span class="token keyword">not</span> np<span class="token punctuation">.</span>isnan<span class="token punctuation">(</span>ei<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    ei_values<span class="token punctuation">.</span>append<span class="token punctuation">(</span>ei<span class="token punctuation">)</span>
+
+            <span class="token keyword">except</span> np<span class="token punctuation">.</span>linalg<span class="token punctuation">.</span>LinAlgError<span class="token punctuation">:</span>
+                <span class="token comment"># 矩阵计算出错时跳过此样本</span>
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"警告: 在EI计算中发生矩阵奇异值错误，跳过此theta样本。"</span><span class="token punctuation">)</span>
+                <span class="token keyword">continue</span>
+                
+        <span class="token keyword">return</span> np<span class="token punctuation">.</span>mean<span class="token punctuation">(</span>ei_values<span class="token punctuation">)</span> <span class="token keyword">if</span> ei_values <span class="token keyword">else</span> <span class="token number">0.0</span>
+
+
+
+    <span class="token keyword">def</span> <span class="token function">optimize</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>objective_fn<span class="token punctuation">,</span>n_iter<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">'''主循环部分，分为两个部分，随机探索阶段和HMC BO探索阶段'''</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"随机探索阶段，初始随机点数设置为</span><span class="token interpolation"><span class="token punctuation">&#123;</span>self<span class="token punctuation">.</span>init_points<span class="token punctuation">&#125;</span></span><span class="token string">个"</span></span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>init_points<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            x_new<span class="token operator">=</span>self<span class="token punctuation">.</span>random_sample<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            y_new<span class="token operator">=</span>objective_fn<span class="token punctuation">(</span>x_new<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>X_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>vstack<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span>x_new<span class="token punctuation">]</span><span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>y_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>append<span class="token punctuation">(</span>self<span class="token punctuation">.</span>y_obs<span class="token punctuation">,</span>y_new<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>_write_log<span class="token punctuation">(</span>iteration<span class="token operator">=</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span>x_new<span class="token operator">=</span>x_new<span class="token punctuation">,</span>y_new<span class="token operator">=</span>y_new<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"第二阶段，将进行</span><span class="token interpolation"><span class="token punctuation">&#123;</span>n_iter<span class="token punctuation">&#125;</span></span><span class="token string">次HMC BO探索"</span></span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n_iter<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token comment"># 1. 使用HMC采样得到20组参数theta</span>
+            theta_samples<span class="token operator">=</span>self<span class="token punctuation">.</span>sample_theta_posterior<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            
+            <span class="token comment"># 2. 根据20个参数theta得到20个a_EI，a_EI取均值即a_BO,中间过程封装到求EI的方法中；</span>
+            best_ei<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>
+            best_x<span class="token operator">=</span><span class="token boolean">None</span>
+            <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                x_candidate<span class="token operator">=</span>self<span class="token punctuation">.</span>random_sample<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                ei<span class="token operator">=</span>self<span class="token punctuation">.</span>expected_improvement<span class="token punctuation">(</span>x_candidate<span class="token punctuation">,</span>theta_samles<span class="token punctuation">)</span>
+                <span class="token keyword">if</span> ei<span class="token operator">></span>best_ei<span class="token punctuation">:</span>
+                    best_ei<span class="token operator">=</span>best_ei
+                    best_x<span class="token operator">=</span>x_candidate
+                <span class="token keyword">if</span> <span class="token keyword">not</span> best_x<span class="token punctuation">:</span>
+                    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"出错了，采样得到a_BO全是无效值"</span><span class="token punctuation">)</span>
+                <span class="token comment"># 把选出来的最佳评估点丢给黑盒函数跑分，并更新X_obs,y_obs，并写入日志</span>
+                y_new<span class="token operator">=</span>objective_fn<span class="token punctuation">(</span>best_x<span class="token punctuation">)</span>
+                self<span class="token punctuation">.</span>X_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>vstack<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>X_obs<span class="token punctuation">,</span>best_x<span class="token punctuation">]</span><span class="token punctuation">)</span>
+                self<span class="token punctuation">.</span>y_obs<span class="token operator">=</span>np<span class="token punctuation">.</span>append<span class="token punctuation">(</span>y_obs<span class="token punctuation">,</span>y_new<span class="token punctuation">)</span>
+                self<span class="token punctuation">.</span>_write_log<span class="token punctuation">(</span>iteration<span class="token operator">=</span>self<span class="token punctuation">.</span>init_points <span class="token operator">+</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span>x_new<span class="token operator">=</span>best_x<span class="token punctuation">,</span>y_new<span class="token operator">=</span>y_new<span class="token punctuation">)</span>
+                <span class="token comment"># 优化结束，返回黑盒函数评估分的历史最高分</span>
+        best_idx<span class="token operator">=</span>np<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>self<span class="token punctuation">.</span>y_obs<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>X_obs<span class="token punctuation">[</span>best_idx<span class="token punctuation">]</span><span class="token punctuation">,</span>self<span class="token punctuation">.</span>y_obs<span class="token punctuation">[</span>best_idx<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>从类中发现，需要调用一个外部的黑盒函数<code>objective_fn</code>来评估当前超参数配置的好坏</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">my_objective_fn</span><span class="token punctuation">(</span>x_new<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># 将优化器给出的numpy数组转换为超参数字典</span>
+    hparams <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+        <span class="token string">'lr'</span><span class="token punctuation">:</span> x_new<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token string">'dense_units'</span><span class="token punctuation">:</span> <span class="token builtin">int</span><span class="token punctuation">(</span>x_new<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">'dropout_rate'</span><span class="token punctuation">:</span> x_new<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token string">'l2_reg'</span><span class="token punctuation">:</span> x_new<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token string">'optimizer_choice'</span><span class="token punctuation">:</span> <span class="token builtin">int</span><span class="token punctuation">(</span>x_new<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">'momentum'</span><span class="token punctuation">:</span> x_new<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment"># 清理会话并调用训练函数</span>
+    tf<span class="token punctuation">.</span>keras<span class="token punctuation">.</span>backend<span class="token punctuation">.</span>clear_session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    gc<span class="token punctuation">.</span>collect<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"\n正在评估超参数: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>hparams<span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+    accuracy <span class="token operator">=</span> train_and_evaluate_model<span class="token punctuation">(</span>hparams<span class="token punctuation">,</span> train_ds<span class="token punctuation">,</span> val_ds<span class="token punctuation">,</span> epochs<span class="token operator">=</span><span class="token number">40</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"评估完成 - 验证集准确率: </span><span class="token interpolation"><span class="token punctuation">&#123;</span>accuracy<span class="token punctuation">:</span><span class="token format-spec">.4f</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> accuracy
+
+<span class="token comment"># 实例化并运行优化器</span>
+optimizer <span class="token operator">=</span> BayesianOptimizer<span class="token punctuation">(</span>search_space<span class="token operator">=</span>search_space<span class="token punctuation">,</span> 
+                              init_points<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span>
+                              log_file<span class="token operator">=</span><span class="token string">"./EI_MCMC_BO_log.json"</span> <span class="token comment"># &lt;--- 传入日志文件名</span>
+                             <span class="token punctuation">)</span>
+
+best_x<span class="token punctuation">,</span> best_y <span class="token operator">=</span> optimizer<span class="token punctuation">.</span>optimize<span class="token punctuation">(</span>objective_fn<span class="token operator">=</span>my_objective_fn<span class="token punctuation">,</span> n_iter<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://minna-li.github.io">Minna Li</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://minna-li.github.io/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/">https://minna-li.github.io/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://minna-li.github.io" target="_blank">Minna's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/17/Hexo%E5%A4%9A%E7%AB%AF%E9%83%A8%E7%BD%B2/" title="Hexo多端部署"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Hexo多端部署</div></div><div class="info-2"><div class="info-item-1">Hexo 博客多端 / 新设备部署与同步指南 本指南涵盖了在强管控网络（如公司内网）或全新设备上，从零搭建环境、拉取源码、修复主题同步坑点，到日常多端协作的完整流程。  一、 环境准备（Git &amp; Node.js） 1. 安装 Git &amp; 配置凭证保存  下载并默认安装 Git。 为了在 HTTPS 下实现免密推拉代码，在 Git Bash 中运行一次凭证保存，让 Git 记住你的 GitHub 账号密码 / Personal Access Token（个人访问令牌），避免每次 push 或 pull 都让你手动输入：git config --global credential.helper store   2. 安装 Node.js  访问 Node.js 官网，下载 LTS 版本 (.msi 安装包)。 它的作用是：让 JavaScript 可以在你的电脑系统里直接运行, 电脑必须安装了 Node.js 这个“发动机”，才能看得懂 Hexo 的代码，才能把你的 .md 文章渲染拼装成 .html 网页 npm 的全称是 Node Package Manager...</div></div></div></a><a class="pagination-related" href="/2025/03/20/FEniCS%E6%9C%89%E9%99%90%E5%85%83%E7%BC%96%E7%A8%8B/" title="FEniCS有限元编程库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">FEniCS有限元编程库</div></div><div class="info-2"><div class="info-item-1">FEniCS的结构介绍 FEniCS 不是单一文件，而是模块化的套件，核心分两层：   用户层：python 接口 语法非常简洁、接近数学公式。会调包fenics/dolfin.   底层核心是C++ 其网格处理，数值计算，并行计算都是用C++写的   核心组件：    dolfin: 核心计算库（网格、函数空间、求解器） ufl: 公式语言（像写数学公式一样写PDE） ffc: 公式编译器（把数学公式转化为C++代码）  最新版本安装教程 参考：https://fenicsproject.org/download/ 具体步骤：(以win11系统为例)  打开anaconda prompt 先创建环境  conda create -n fenicsx python=3.11  进入环境  conda activate fenicsx  安装最新版本：  conda install -c conda-forge fenics-dolfinx   安装完成后测试  python -c "from dolfinx import mesh; print('FEniCSx 安装成功！')"...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/03/17/Pytorch%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%BA%94%E7%94%A8/" title="Pytorch框架学习与应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-17</div><div class="info-item-2">Pytorch框架学习与应用</div></div><div class="info-2"><div class="info-item-1">总述Pytorch 核心五大模块：  torch 张量Tensor、自动求导、设备转换 torch.nn 网络层、损失函数、模型基类 torch.optim 优化器（SGD、Adam等） torchvision 图像数据集、预处理 torch.utils.data 数据加载工具，Dataset 和 DataLoader  torch模块 tensor是整个pytorch的基础，它像是升级版的numpy Tensor 创建tensor # 按照已有对象data创建 torch.tensor(data, dtype=None, device=None, requires_grad=False) """ data: 输入数据（列表、元组、numpy数组等） dtype: 数据类型（可选） device: 设备（可选）cpu or cuda requires_grad: 是否需要梯度（可选） """  # 按照shape初始化创建 shape=(2,3) rand_tensor = torch.rand(shape) torch.randn(shape) torch.ones(shape...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Minna Li</div><div class="author-info-description">Minna Li的个人技术博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">总述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">主要模块导入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">实验可重复性的保证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">划分数据集</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-data-%E5%8A%9F%E8%83%BD%E5%A4%A7%E5%85%A8"><span class="toc-number">4.1.</span> <span class="toc-text">tf.data 功能大全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%90%84%E7%A7%8D%E6%9D%A5%E6%BA%90%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE"><span class="toc-number">4.1.1.</span> <span class="toc-text">从各种来源创建数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#map-%E5%AF%B9%E6%AF%8F%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%81%9A%E5%A4%84%E7%90%86"><span class="toc-number">4.1.2.</span> <span class="toc-text">map: 对每个数据做处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shuffle-%E6%89%93%E4%B9%B1%E6%95%B0%E6%8D%AE%E9%A1%BA%E5%BA%8F"><span class="toc-number">4.1.3.</span> <span class="toc-text">shuffle 打乱数据顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#batch-%E5%AF%B9%E6%95%B0%E6%8D%AE%E5%88%86%E6%89%B9%E6%AC%A1"><span class="toc-number">4.1.4.</span> <span class="toc-text">batch 对数据分批次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cache-%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%EF%BC%88%E4%B8%8D%E7%94%A8%E5%8F%8D%E5%A4%8D%E8%AF%BB%E7%A1%AC%E7%9B%98%EF%BC%89"><span class="toc-number">4.1.5.</span> <span class="toc-text">cache 缓存数据（不用反复读硬盘）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prefetch-CPU%E9%A2%84%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">4.1.6.</span> <span class="toc-text">prefetch CPU预取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#repeat-%E6%95%B0%E6%8D%AE%E9%87%8D%E5%A4%8D%E5%BA%94%E7%94%A8"><span class="toc-number">4.1.7.</span> <span class="toc-text">repeat 数据重复应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#take-skip-%E5%8F%96%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE"><span class="toc-number">4.1.8.</span> <span class="toc-text">take&#x2F;skip : 取部分数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-data-%E5%A4%84%E7%90%86%E7%BA%BF%E9%A1%BA%E5%BA%8F%E6%A8%A1%E6%9D%BF"><span class="toc-number">4.2.</span> <span class="toc-text">tf.data 处理线顺序模板</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">搭建模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#keras%E7%9A%84%E5%86%85%E7%BD%AE%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%EF%BC%88tf-keras-applications%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">keras的内置预训练模型（tf.keras.applications）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AlexNet-2012-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%BC%80%E5%B1%B1%E9%BC%BB%E7%A5%96"><span class="toc-number">5.1.1.</span> <span class="toc-text">AlexNet (2012) - 深度学习的开山鼻祖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VGG-%E7%B3%BB%E5%88%97-VGG16-VGG19-2014"><span class="toc-number">5.1.2.</span> <span class="toc-text">VGG 系列 (VGG16 &#x2F; VGG19, 2014)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ResNet-Residual-Network-%E6%AE%8B%E5%B7%AE%E7%BD%91%E7%BB%9C-2015"><span class="toc-number">5.1.3.</span> <span class="toc-text">ResNet (Residual Network 残差网络, 2015)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MobileNet-%E7%B3%BB%E5%88%97-2017"><span class="toc-number">5.1.4.</span> <span class="toc-text">MobileNet 系列 (2017+)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EfficientNet-%E7%B3%BB%E5%88%97-B0-B7-2019"><span class="toc-number">5.1.5.</span> <span class="toc-text">EfficientNet 系列 (B0 - B7, 2019)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Transformer-2017-BERT-GPT-%E7%B3%BB%E5%88%97"><span class="toc-number">5.1.6.</span> <span class="toc-text">Transformer (2017) &amp; BERT &#x2F; GPT 系列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-keras-Sequential-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8B%BC%E8%A3%85%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.2.</span> <span class="toc-text">tf.keras.Sequential([]) 自定义拼装模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#model-compile-%E6%A8%A1%E5%9E%8B%E7%BC%96%E8%AF%91"><span class="toc-number">5.3.</span> <span class="toc-text">model.compile() 模型编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">5.4.</span> <span class="toc-text">完整示例代码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">model.fit() 训练模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">tf.keras.callbacks 训练动态分析（回调函数）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TF%E6%A0%B8%E5%BF%83%E7%9A%84%E5%9B%9B%E5%A4%A7%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="toc-number">7.1.</span> <span class="toc-text">TF核心的四大回调函数介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ModelCheckpoint-%EF%BC%9A%E6%B8%B8%E6%88%8F%E8%87%AA%E5%8A%A8%E5%AD%98%E6%A1%A3%E6%9C%BA%E5%88%B6"><span class="toc-number">7.1.1.</span> <span class="toc-text">ModelCheckpoint ：游戏自动存档机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReduceLROnPlateau%EF%BC%9A%E5%8F%AA%E8%83%BD%E8%B0%83%E6%8E%A7%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="toc-number">7.1.2.</span> <span class="toc-text">ReduceLROnPlateau：只能调控学习率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EarlyStopping-%E6%97%A9%E5%81%9C%E7%9B%91%E6%B5%8B%E5%99%A8"><span class="toc-number">7.1.3.</span> <span class="toc-text">EarlyStopping : 早停监测器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TensorBoard"><span class="toc-number">7.1.4.</span> <span class="toc-text">TensorBoard</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%9E%E8%B0%83"><span class="toc-number">7.1.5.</span> <span class="toc-text">自定义回调</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">插言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">贝叶斯优化器</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/Hexo%E5%A4%9A%E7%AB%AF%E9%83%A8%E7%BD%B2/" title="Hexo多端部署">Hexo多端部署</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%85%AB%E8%82%A1%E7%AC%94%E8%AE%B0/" title="大模型八股笔记">大模型八股笔记</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/" title="TensorFlow框架学习">TensorFlow框架学习</a><time datetime="2025-03-26T16:00:00.000Z" title="发表于 2025-03-27 00:00:00">2025-03-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/PDE%E6%B1%82%E8%A7%A3%E5%BF%85%E5%A4%87-jax%E5%BA%93/" title="PDE求解必备-jax库">PDE求解必备-jax库</a><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/FEniCS%E6%9C%89%E9%99%90%E5%85%83%E7%BC%96%E7%A8%8B/" title="FEniCS有限元编程库">FEniCS有限元编程库</a><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Minna Li</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

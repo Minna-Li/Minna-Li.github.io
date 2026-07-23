@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Minna's Blog - 学习笔记</title><meta name="author" content="Minna Li"><meta name="copyright" content="Minna Li"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Minna Li的个人技术博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Minna&#39;s Blog">
+<meta property="og:url" content="https://minna-li.github.io/index.html">
+<meta property="og:site_name" content="Minna&#39;s Blog">
+<meta property="og:description" content="Minna Li的个人技术博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minna-li.github.io/img/butterfly-icon.png">
+<meta property="article:author" content="Minna Li">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minna-li.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Minna's Blog",
+  "alternateName": [
+    "学习笔记",
+    "minna-li.github.io"
+  ],
+  "url": "https://minna-li.github.io/"
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://minna-li.github.io/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Minna\'s Blog',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 8.1.1"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Minna's Blog</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Minna's Blog</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/17/Hexo%E5%A4%9A%E7%AB%AF%E9%83%A8%E7%BD%B2/" title="Hexo多端部署">Hexo多端部署</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Git/">Git</a></span></div><div class="content">Hexo 博客多端 / 新设备部署与同步指南 本指南涵盖了在强管控网络（如公司内网）或全新设备上，从零搭建环境、拉取源码、修复主题同步坑点，到日常多端协作的完整流程。  一、 环境准备（Git &amp; Node.js） 1. 安装 Git &amp; 配置凭证保存  下载并默认安装 Git。 为了在 HTTPS 下实现免密推拉代码，在 Git Bash 中运行一次凭证保存，让 Git 记住你的 GitHub 账号密码 / Personal Access Token（个人访问令牌），避免每次 push 或 pull 都让你手动输入：git config --global credential.helper store   2. 安装 Node.js  访问 Node.js 官网，下载 LTS 版本 (.msi 安装包)。 它的作用是：让 JavaScript 可以在你的电脑系统里直接运行, 电脑必须安装了 Node.js 这个“发动机”，才能看得懂 Hexo 的代码，才能把你的 .md 文章渲染拼装成 .html 网页 npm 的全称是 Node Package Manager...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%85%AB%E8%82%A1%E7%AC%94%E8%AE%B0/" title="大模型八股笔记">大模型八股笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/LLM/">LLM</a></span></div><div class="content">Transformer基础  一、 自注意力机制（Self-Attention）深度剖析 1. 为什么计算公式中要除以 ？ 公式如下：   数学底层原因：假设  和  中的输入特征是独立同分布的随机变量，且均值为 0，方差为 1。它们做点积  时，包含  个元素的乘积和。  此时，点积结果的均值依然是 0，但方差会膨胀到 。 如果不做缩放，当  很大时，点积结果的值域会非常大。   导致后果（梯度消失）：大数值传入 softmax 后，会落入其两端的饱和区（Saturating Region），此时 softmax 的导数（梯度）将趋近于 0，从而在反向传播时引发致命的梯度消失（Gradient Vanishing）。 缩放正义：除以  后，可以将点积结果的方差重新拉回 1，使 softmax 保持在梯度敏感的区域。  2.  矩阵的维度关系是怎么流转的？ 假设输入序列长度为 ，特征维度为 ：  输入  维度:  三大权重矩阵  维度: 均为  映射后的  维度: 均为  点积得分  维度: （这一步揭示了为什么长序列的计算开销呈  二次方增长）。 最终输出  维度: 。维度完美...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/" title="TensorFlow框架学习">TensorFlow框架学习</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-26T16:00:00.000Z" title="发表于 2025-03-27 00:00:00">2025-03-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%8CTensorFlow/">深度学习，TensorFlow</a></span></div><div class="content">总述 主要模块导入 #导入深度学习架构 from tensorflow import keras from keras import models, optimizers, metrics, layers, regularizers, losses from keras.models import Sequential from keras.optimizers import SGD, RMSprop, Adam, Adagrad # 本算例用到了贝叶斯优化和哈密顿蒙特卡洛（HMC）采样，所以需要导入TensorFlow 的概率编程扩展库 import tensorflow_probability as tfp # TensorFlow Probability 的分布模块 tfd = tfp.distributions # 此外一些必备的常用库也需要导入 import time import shutil import pathlib import itertools import pandas as pd import seaborn as sns sns.set_style(...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/20/PDE%E6%B1%82%E8%A7%A3%E5%BF%85%E5%A4%87-jax%E5%BA%93/" title="PDE求解必备-jax库">PDE求解必备-jax库</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8CPDE/">数学，PDE</a></span></div><div class="content">JAX是什么？ JAX 是由 Google 开发的一个 Python 第三方开源计算库（就像 NumPy、SciPy 一样，通过 pip install jax 安装） JAX = 完美兼容 NumPy 的接口 + 自动求导 (Autograd) + 底层 GPU/TPU 极速编译 (XLA) 在使用中，JAX的核心模块几乎完整复刻Numpy: import numpy as np import jax.numpy as jnp  # Numpy 写法： x = np.linspace(0, 1, 100) y = np.fft.fft(np.sin(x))  # JAX 写法（完全一样！）： x = jnp.linspace(0, 1, 100) y = jnp.fft.fft(jnp.sin(x)) jax的几大优势 JAX 并不是一个神经网络框架，它是一个高性能数值计算框架。在科学计算中发挥着非常高效的作用，这归功于以下函数装饰器（Decorators）：  jax.grad: 终结了控制问题中需要手动计算反向伴随方程的噩梦 JAX可以追踪所有 Numpy 操作（包括 ff...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/20/FEniCS%E6%9C%89%E9%99%90%E5%85%83%E7%BC%96%E7%A8%8B/" title="FEniCS有限元编程库">FEniCS有限元编程库</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8C%E6%9C%89%E9%99%90%E5%85%83/">数学，有限元</a></span></div><div class="content">FEniCS的结构介绍 FEniCS 不是单一文件，而是模块化的套件，核心分两层：   用户层：python 接口 语法非常简洁、接近数学公式。会调包fenics/dolfin.   底层核心是C++ 其网格处理，数值计算，并行计算都是用C++写的   核心组件：    dolfin: 核心计算库（网格、函数空间、求解器） ufl: 公式语言（像写数学公式一样写PDE） ffc: 公式编译器（把数学公式转化为C++代码）  最新版本安装教程 参考：https://fenicsproject.org/download/ 具体步骤：(以win11系统为例)  打开anaconda prompt 先创建环境  conda create -n fenicsx python=3.11  进入环境  conda activate fenicsx  安装最新版本：  conda install -c conda-forge fenics-dolfinx   安装完成后测试  python -c "from dolfinx import mesh; print('FEniCSx 安装成功！')"...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/17/Pytorch%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%BA%94%E7%94%A8/" title="Pytorch框架学习与应用">Pytorch框架学习与应用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-16T16:00:00.000Z" title="发表于 2025-03-17 00:00:00">2025-03-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%8CPyTorch/">深度学习，PyTorch</a></span></div><div class="content">总述Pytorch 核心五大模块：  torch 张量Tensor、自动求导、设备转换 torch.nn 网络层、损失函数、模型基类 torch.optim 优化器（SGD、Adam等） torchvision 图像数据集、预处理 torch.utils.data 数据加载工具，Dataset 和 DataLoader  torch模块 tensor是整个pytorch的基础，它像是升级版的numpy Tensor 创建tensor # 按照已有对象data创建 torch.tensor(data, dtype=None, device=None, requires_grad=False) """ data: 输入数据（列表、元组、numpy数组等） dtype: 数据类型（可选） device: 设备（可选）cpu or cuda requires_grad: 是否需要梯度（可选） """  # 按照shape初始化创建 shape=(2,3) rand_tensor = torch.rand(shape) torch.randn(shape) torch.ones(shape...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/05/Python%E7%BC%96%E7%A8%8B-%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/" title="Python编程-基础汇总">Python编程-基础汇总</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-05T04:15:48.000Z" title="发表于 2025-03-05 12:15:48">2025-03-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/">Python</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/Python%E7%BC%96%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/">Python编程从入门到实践</a></span></div><div class="content">几大数据结构   列表 List 有序，可变，可重复 [1, 2, 2, 3]   元组 Tuple 有序，不可变，可重复 (1, 2, 2, 3)   字典 Dict 无序！可变，键唯一 {“a”:1, “b”:2}   字符串 Str 有序，不可变，可重复 “hello”   集合 Set 无序，可变，元素唯一(不重复) {1,2,3}   快速总览 常见操作对应 = """ 操作        列表      字典      集合      字符串 ----------------------------------------------- 添加       append    dict[k]=v  add       + 删除       remove    pop        remove    replace 查找       index     get        in        find 是否存在   in        in         in        in 遍历       for item  for k,v    for item  for...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/03/%E6%9D%8E%E8%88%AA-%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E7%AC%94%E8%AE%B0/" title="李航-统计学习方法笔记">李航-统计学习方法笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-03-03T04:51:46.000Z" title="发表于 2025-03-03 12:51:46">2025-03-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8C%E7%AE%97%E6%B3%95/">数学，算法</a></span></div><div class="content">Chapter 1：统计学习概论 基础分类  监督学习，非监督学习，强化学习  监督学习 在监督学习中，假设输入输出变量(X, Y)服从联合概率分布 $P(X, Y)$，为什么要有这个假设呢？  $P(X,Y)$可以理解成数据生成的内在机制，现实世界中的每一个样本都是独立同分布的抽样于这个未知但固定的$P(X,Y)$,包括我们的训练集和测试集，只有他们服从相同的分布，在训练集中学到的规律才能泛化应用到测试集的预测中，这是泛化能力的理论前提 从统计角度来说，$$P(X,Y)=P(X)*P(Y|X),$$ P(Y|X) (已知某个输入数据是X,得到输出数据Y的概率) 是我们最终想学习的目标，它刻画了数据的不确定性来源，比如同一个X,会得到不同的输出Y。 根据学习目标划分了生成模型和判别模型：  学习联合概率分布 $P(X, Y)$是生成方法；比如朴素贝叶斯、隐马尔可夫模型 直接学习决策函数 $f(X)$ 或者 条件分布$P(Y|X)$是判别方法；比如感知机、决策树、逻辑回归、SVM、k 近邻    无监督学习和强化学习 这里暂时不做讨论 统计学习方法三要素  模型：所要学习的条件概率...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/28/Python%E7%BC%96%E7%A8%8B-Pandas%E5%BA%93/" title="Python编程-Pandas库">Python编程-Pandas库</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-28T10:14:16.000Z" title="发表于 2025-02-28 18:14:16">2025-02-28</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/">Python</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/Python%E7%BC%96%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/">Python编程从入门到实践</a></span></div><div class="content">Pandas基础 数据结构： Series ： 一维数据（想象Excel中的一列数据，带行索引（有标签）） # 创建一个Series import pandas as pd # 默认下标 names1 = pd.Series(['张三', '李四', '王五']) print(f"names1输出:\n&#123;names1&#125;")  # 自定义下标 names2 = pd.Series(['张三', '李四', '王五'],                     index = [1,2,3]) print(f"names2输出:\n&#123;names2&#125;")   print(f"类型：&#123;type(names1)&#125;") #type 是python的内置函数，通过 type() 函数获取变量 names 的数据类型  #调用1号的名字 print(names2[1]) # 输出结果： names1输出: 0    张三 1    李四 2    王五 dtype: object #print(names)会返回names中元素的数据类...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/28/Python%E7%BC%96%E7%A8%8B-Numpy%E5%BA%93/" title="Python编程-Numpy库">Python编程-Numpy库</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-01-27T16:00:00.000Z" title="发表于 2025-01-28 00:00:00">2025-01-28</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/">Python</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python/Python%E7%BC%96%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/">Python编程从入门到实践</a></span></div><div class="content">Numpy库的层级结构 # NumPy的安装目录结构（简化版） site-packages/numpy/ ├── __init__.py              # 包的入口点 ├── __config__.py           # 配置信息 ├── _distributor_init.py    # 分发器初始化 ├── _globals.py            # 全局变量 ├── _pyinstaller.py        # PyInstaller支持 │ ├── core/                  # 核心模块（子包） │   ├── __init__.py │   ├── _dtype.py         # 数据类型实现 │   ├── _multiarray_umath.cpython-39.so  # C扩展（性能核心） │   ├── arrayprint.py     # 数组打印 │   ├── defchararray.py   # 字符数组 │   ├── fromnumeric.py    # fromnumeric模块 │ ...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Minna Li</div><div class="author-info-description">Minna Li的个人技术博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/Hexo%E5%A4%9A%E7%AB%AF%E9%83%A8%E7%BD%B2/" title="Hexo多端部署">Hexo多端部署</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%85%AB%E8%82%A1%E7%AC%94%E8%AE%B0/" title="大模型八股笔记">大模型八股笔记</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/" title="TensorFlow框架学习">TensorFlow框架学习</a><time datetime="2025-03-26T16:00:00.000Z" title="发表于 2025-03-27 00:00:00">2025-03-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/PDE%E6%B1%82%E8%A7%A3%E5%BF%85%E5%A4%87-jax%E5%BA%93/" title="PDE求解必备-jax库">PDE求解必备-jax库</a><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/FEniCS%E6%9C%89%E9%99%90%E5%85%83%E7%BC%96%E7%A8%8B/" title="FEniCS有限元编程库">FEniCS有限元编程库</a><time datetime="2025-03-20T04:51:46.000Z" title="发表于 2025-03-20 12:51:46">2025-03-20</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            <a class="card-more-btn" href="/categories/" title="查看更多">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Git/"><span class="card-category-list-name">Git</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/LLM/"><span class="card-category-list-name">LLM</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Python/"><span class="card-category-list-name">Python</span><span class="card-category-list-count">4</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Python/Python%E7%BC%96%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E8%B7%B5/"><span class="card-category-list-name">Python编程从入门到实践</span><span class="card-category-list-count">4</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8CPDE/"><span class="card-category-list-name">数学，PDE</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8C%E6%9C%89%E9%99%90%E5%85%83/"><span class="card-category-list-name">数学，有限元</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%B0%E5%AD%A6%EF%BC%8C%E7%AE%97%E6%B3%95/"><span class="card-category-list-name">数学，算法</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%EF%BC%8CPyTorch/"><span class="card-category-list-name">深度学习，PyTorch</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/LLM/" style="font-size: 1.1em; color: #999">LLM</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BC%A0%E7%BB%9F%E7%AE%97%E6%B3%95/" style="font-size: 1.1em; color: #999">机器学习传统算法</a> <a href="/tags/%E6%9C%89%E9%99%90%E5%85%83%E7%BC%96%E7%A8%8B/" style="font-size: 1.1em; color: #999">有限元编程</a> <a href="/tags/Git/" style="font-size: 1.1em; color: #999">Git</a> <a href="/tags/PDE%E9%AB%98%E6%80%A7%E8%83%BD%E6%B1%82%E8%A7%A3/" style="font-size: 1.1em; color: #999">PDE高性能求解</a> <a href="/tags/Python%E5%9F%BA%E7%A1%80/" style="font-size: 1.5em; color: #99a9bf">Python基础</a> <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" style="font-size: 1.3em; color: #99a1ac">深度学习</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/03/">
+            <span class="card-archive-list-date">
+              三月 2026
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/03/">
+            <span class="card-archive-list-date">
+              三月 2025
+            </span>
+            <span class="card-archive-list-count">6</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              二月 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/01/">
+            <span class="card-archive-list-date">
+              一月 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">11</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-07-23T09:25:17.340Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Minna Li</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
