@@ -1,0 +1,1068 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>verl框架实践RL续训Qwen3-8B | Minna's Blog</title><meta name="author" content="Minna Li"><meta name="copyright" content="Minna Li"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="verl 框架下离线数据集处理与 RL 训练配置教程 本教程总结了在服务器网络有限&#x2F;受限环境下，从环境搭建、框架安装、模型与数据集下载，到最终配置启动训练的全流程。  一、 配置 Conda 虚拟环境 目的：为 RL 训练创建一个独立的 Python 环境，避免与其他项目的依赖包发生冲突。 1. 检查 Conda 是否可用 在终端输入以下命令查看 Conda 版本： conda --version">
+<meta property="og:type" content="article">
+<meta property="og:title" content="verl框架实践RL续训Qwen3-8B">
+<meta property="og:url" content="https://minna-li.github.io/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/index.html">
+<meta property="og:site_name" content="Minna&#39;s Blog">
+<meta property="og:description" content="verl 框架下离线数据集处理与 RL 训练配置教程 本教程总结了在服务器网络有限&#x2F;受限环境下，从环境搭建、框架安装、模型与数据集下载，到最终配置启动训练的全流程。  一、 配置 Conda 虚拟环境 目的：为 RL 训练创建一个独立的 Python 环境，避免与其他项目的依赖包发生冲突。 1. 检查 Conda 是否可用 在终端输入以下命令查看 Conda 版本： conda --version">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minna-li.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-07-23T09:32:05.000Z">
+<meta property="article:modified_time" content="2026-07-27T14:17:53.439Z">
+<meta property="article:author" content="Minna Li">
+<meta property="article:tag" content="verL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minna-li.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "verl框架实践RL续训Qwen3-8B",
+  "url": "https://minna-li.github.io/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/",
+  "image": "https://minna-li.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-07-23T09:32:05.000Z",
+  "dateModified": "2026-07-27T14:17:53.439Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Minna Li",
+      "url": "https://minna-li.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://minna-li.github.io/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'verl框架实践RL续训Qwen3-8B',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Minna's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">verl框架实践RL续训Qwen3-8B</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">verl框架实践RL续训Qwen3-8B</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-23T09:32:05.000Z" title="发表于 2026-07-23 17:32:05">2026-07-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-27T14:17:53.439Z" title="更新于 2026-07-27 22:17:53">2026-07-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/verL/">verL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>verl 框架下离线数据集处理与 RL 训练配置教程</h1>
+<p>本教程总结了在服务器网络有限/受限环境下，从环境搭建、框架安装、模型与数据集下载，到最终配置启动训练的全流程。</p>
+<hr>
+<h2 id="一、-配置-Conda-虚拟环境">一、 配置 Conda 虚拟环境</h2>
+<p><strong>目的</strong>：为 RL 训练创建一个独立的 Python 环境，避免与其他项目的依赖包发生冲突。</p>
+<h3 id="1-检查-Conda-是否可用">1. 检查 Conda 是否可用</h3>
+<p>在终端输入以下命令查看 Conda 版本：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda <span class="token parameter variable">--version</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p><strong>作用</strong>：确认系统已安装 Conda。如果正常显示版本号（如 <code>conda 23.x.x</code>），说明可直接使用。</p>
+</blockquote>
+<h3 id="2-创建-Python-3-12-虚拟环境">2. 创建 Python 3.12 虚拟环境</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda create <span class="token parameter variable">-n</span> verl_env_lm <span class="token assign-left variable">python</span><span class="token operator">=</span><span class="token number">3.12</span> <span class="token parameter variable">-y</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>我在服务器内网受限情况下，服务器根目录安装完整环境报硬盘超限的情况下，选择了网盘work下绝对路径安装：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda create <span class="token parameter variable">--prefix</span> /home/ma-user/work/conda_envs/verl_env_lm <span class="token assign-left variable">python</span><span class="token operator">=</span><span class="token number">3.12</span> <span class="token parameter variable">-c</span> https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ <span class="token parameter variable">-c</span> https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ --override-channels <span class="token parameter variable">-y</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p><strong>作用</strong>：-c 表示下载的镜像源通道。不知道为何我必须加上–override-channels（覆盖/忽略默认镜像源）才能成功下载环境</p>
+</blockquote>
+<h4 id="如果创建失败或者需要删除之后再重新下载：">如果创建失败或者需要删除之后再重新下载：</h4>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda remove <span class="token parameter variable">-n</span> rl_env <span class="token parameter variable">--all</span> <span class="token parameter variable">-y</span>  
+conda remove <span class="token parameter variable">-n</span> verl_env_lm <span class="token parameter variable">--all</span> <span class="token parameter variable">-y</span>
+pip cache purge
+<span class="token function">rm</span> <span class="token parameter variable">-rf</span> /home/ma-user/work/conda_envs/verl_env_lm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="3-激活虚拟环境">3. 激活虚拟环境</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda activate verl_env_lm  <span class="token comment"># 如果直接下载在硬盘</span>
+conda activate /home/ma-user/work/conda_envs/verl_env_lm  <span class="token comment"># 如果是按前面的绝对路径下载在网盘中</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>作用</strong>：切换到刚建好的环境中。激活成功后，命令行开头的括号会从 <code>(base)</code> 变成 <code>(verl_env_lm)</code>。</p>
+</blockquote>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 有时的激活是fake激活，通过验证python版本（前面创建的3.12）来判断是否真的进入了环境</span>
+python <span class="token parameter variable">--version</span>
+<span class="token comment"># 否则先退出再重进</span>
+conda deactivate
+conda activate /home/ma-user/work/conda_envs/verl_env_lm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<hr>
+<h2 id="二、-拉取并安装-verl-框架">二、 拉取并安装 verl 框架</h2>
+<p><strong>目的</strong>：获取基于 Ray 和 vLLM 的高效 RL 强化学习训练框架，并安装其所需的底层依赖。</p>
+<h3 id="1-创建项目根目录">1. 创建项目根目录</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /home/ma-user/work/limin/math_rl_project
+<span class="token builtin class-name">cd</span> /home/ma-user/work/limin/math_rl_project<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>参数解释</strong>：</p>
+<ul>
+<li><code>mkdir -p</code>：递归创建文件夹（如果父级路径不存在会自动创建）。</li>
+<li><code>cd</code>：进入工作目录。</li>
+</ul>
+</blockquote>
+<h3 id="2-克隆-verl-官方代码仓库">2. 克隆 verl 官方代码仓库</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用 git clone 命令从 GitHub 获取项目的完整代码</span>
+<span class="token function">git</span> clone <span class="token parameter variable">--depth</span> <span class="token number">1</span> https://github.com/volcengine/verl.git
+<span class="token comment"># 如果遇到内网防火墙的SSL证书拦截</span>
+<span class="token function">git</span> clone <span class="token parameter variable">-c</span> <span class="token assign-left variable">http.sslVerify</span><span class="token operator">=</span>false <span class="token parameter variable">--depth</span> <span class="token number">1</span> https://github.com/volcengine/verl.git
+<span class="token comment"># 进入该文件夹（当前已经通过第一步处于/home/ma-user/work/limin/math_rl_project这个位置）</span>
+<span class="token builtin class-name">cd</span> verl<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>作用</strong>：</p>
+<ul>
+<li>将 verl 框架的代码整包下载到当前目录下。框架代码相当于工程图纸，接下来还需要准备建筑材料（环境中的各种包）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>参数解释</strong>:</p>
+<ul>
+<li><code>--depth 1</code>: 表示只下载最新版本的代码，不下载历史记录</li>
+<li><code>http.sslVerify=false</code>: 告诉Git在拉取代码时忽略证书验证</li>
+</ul>
+</blockquote>
+<h3 id="3-安装verl所需的包，一个完整的安装脚本">3. 安装verl所需的包，一个完整的安装脚本</h3>
+<blockquote>
+<p>注意：</p>
+<ul>
+<li>这是奠定在第一步已经建立好verl_env_lm环境之后的步骤</li>
+<li>这个脚本中有依赖当前服务器中同事已经下好的polyfill-glibc, 后期再安装时这个地方需要从其他地方获取</li>
+<li>将这个脚本放在math_rl_project文件夹下，保存成install.sh文件然后直接在正确路径下 <code>bash install.sh</code>就好</li>
+<li>安装过程比较漫长，需要网速尽量稳定2MB/s以上，如果服务器处于内网限制下，可以通过 ssh 反向代理通道使用本机网络，详见第三点</li>
+</ul>
+</blockquote>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token assign-left variable">USE_MEGATRON</span><span class="token operator">=</span><span class="token variable">${USE_MEGATRON<span class="token operator">:-</span>0}</span>
+<span class="token assign-left variable">USE_SGLANG</span><span class="token operator">=</span><span class="token variable">${USE_SGLANG<span class="token operator">:-</span>1}</span>
+
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">MAX_JOBS</span><span class="token operator">=</span><span class="token number">32</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">PIP_INDEX_URL</span><span class="token operator">=</span>https://repo.huaweicloud.com/repository/pypi/simple/
+
+<span class="token builtin class-name">echo</span> <span class="token string">"1. install inference frameworks and pytorch they need"</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$USE_SGLANG</span> <span class="token parameter variable">-eq</span> <span class="token number">1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    pip <span class="token function">install</span> <span class="token string">"sglang[all]==0.5.2"</span> --no-cache-dir <span class="token operator">&amp;&amp;</span> pip <span class="token function">install</span> torch-memory-saver --no-cache-dir
+<span class="token keyword">fi</span>
+pip <span class="token function">install</span> --no-cache-dir <span class="token string">"vllm==0.11.0"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"2. install basic packages"</span>
+pip <span class="token function">install</span> <span class="token string">"transformers[hf_xet]&gt;=4.51.0"</span> accelerate datasets peft hf-transfer <span class="token punctuation">\</span>
+    <span class="token string">"numpy&lt;2.0.0"</span> <span class="token string">"pyarrow&gt;=15.0.0"</span> pandas <span class="token string">"tensordict&gt;=0.8.0,&lt;=0.10.0,!=0.9.0"</span> torchdata <span class="token punctuation">\</span>
+    ray<span class="token punctuation">[</span>default<span class="token punctuation">]</span> codetiming hydra-core pylatexenc qwen-vl-utils wandb dill pybind11 liger-kernel mathruler <span class="token punctuation">\</span>
+    pytest py-spy pre-commit ruff tensorboard 
+
+<span class="token builtin class-name">echo</span> <span class="token string">"pyext is lack of maintainace and cannot work with python 3.12."</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"if you need it for prime code rewarding, please install using patched fork:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"pip install git+https://github.com/ShaohonChen/PyExt.git@py311support"</span>
+
+pip <span class="token function">install</span> <span class="token string">"nvidia-ml-py&gt;=12.560.30"</span> <span class="token string">"fastapi[standard]&gt;=0.115.0"</span> <span class="token string">"optree&gt;=0.13.0"</span> <span class="token string">"pydantic&gt;=2.9"</span> <span class="token string">"grpcio&gt;=1.62.1"</span>
+
+
+<span class="token builtin class-name">echo</span> <span class="token string">"3. install FlashAttention and FlashInfer"</span>
+<span class="token comment"># Install flash-attn-2.8.1 (cxx11abi=False)</span>
+<span class="token comment"># wget -nv https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl &amp;&amp; \</span>
+<span class="token comment">#     pip install --no-cache-dir flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl</span>
+<span class="token comment"># curl -L -O --insecure https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl &amp;&amp; \</span>
+<span class="token comment"># pip install --no-cache-dir flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl</span>
+pip <span class="token function">install</span> --no-cache-dir flashinfer-python<span class="token operator">==</span><span class="token number">0.3</span>.1
+
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$USE_MEGATRON</span> <span class="token parameter variable">-eq</span> <span class="token number">1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"4. install TransformerEngine and Megatron"</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Notice that TransformerEngine installation can take very long time, please be patient"</span>
+    pip <span class="token function">install</span> <span class="token string">"onnxscript==0.3.1"</span>
+    <span class="token assign-left variable">NVTE_FRAMEWORK</span><span class="token operator">=</span>pytorch pip3 <span class="token function">install</span> --no-deps git+https://github.com/NVIDIA/TransformerEngine.git@v2.6
+    pip3 <span class="token function">install</span> --no-deps git+https://github.com/NVIDIA/Megatron-LM.git@core_v0.13.1
+<span class="token keyword">fi</span>
+
+
+<span class="token builtin class-name">echo</span> <span class="token string">"5. May need to fix opencv"</span>
+pip <span class="token function">install</span> opencv-python
+pip <span class="token function">install</span> opencv-fixer <span class="token operator">&amp;&amp;</span> <span class="token punctuation">\</span>
+    python <span class="token parameter variable">-c</span> <span class="token string">"from opencv_fixer import AutoFix; AutoFix()"</span>
+
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$USE_MEGATRON</span> <span class="token parameter variable">-eq</span> <span class="token number">1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"6. Install cudnn python package (avoid being overridden)"</span>
+    pip <span class="token function">install</span> nvidia-cudnn-cu12<span class="token operator">==</span><span class="token number">9.10</span>.2.21
+<span class="token keyword">fi</span>
+pip <span class="token function">install</span> --no-cache-dir <span class="token string">"vllm==0.11.2"</span>
+<span class="token comment"># ***************  注意不要直接跑，flash_attn下载一下</span>
+<span class="token comment"># ***************  或者从/home/ma-user/work/lijifu/verl/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl这里拿 ***************</span>
+pip <span class="token function">install</span> --no-cache-dir flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl
+pip <span class="token function">install</span> math_verify
+
+<span class="token comment"># ***************  注意不要直接跑，改自己的路径 ***************</span>
+<span class="token comment"># ***************  需要polyfill-glibc，可以从我这个路径复制过去</span>
+<span class="token builtin class-name">cd</span> /home/ma-user/work/lijifu/verl/polyfill-glibc
+<span class="token comment"># ****************  改自己路径下的flash_attn_2_cuda.cpython-312-x86_64-linux-gnu.so</span>
+./polyfill-glibc --target-glibc <span class="token number">2.31</span> /home/ma-user/anaconda3/envs/verl_lijifu/lib/python3.12/site-packages/flash_attn_2_cuda.cpython-312-x86_64-linux-gnu.so
+pip <span class="token function">install</span> <span class="token assign-left variable">triton</span><span class="token operator">==</span><span class="token number">3.4</span> <span class="token parameter variable">-i</span> https://repo.huaweicloud.com/repository/pypi/simple/
+<span class="token builtin class-name">echo</span> <span class="token string">"Successfully installed all packages"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="4-安装-verl-到配置好的环境中">4. 安装 verl 到配置好的环境中</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> verl
+pip <span class="token function">install</span> <span class="token parameter variable">-e</span> <span class="token builtin class-name">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>参数解释</strong>：</p>
+<ul>
+<li><code>cd verl</code>：进入 verl 代码目录。</li>
+<li><code>pip install -e .</code>：以“可编辑模式”安装当前项目。这样以后修改 verl 源码（如奖励函数）时，无需重新安装即可立即生效。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="三、-下载基座大语言模型">三、 下载基座大语言模型</h2>
+<ul>
+<li><strong>目的</strong>：强化学习训练（如 GRPO/PPO）需要在已具备一定基础能力的预训练模型上进行，因此先将模型权重下载到本地。</li>
+<li><strong>途径</strong>: 从Huggingface(国外源，需要走国内镜像) or 从modelscope(国内源)。这里以后者为例</li>
+</ul>
+<h3 id="1-创建模型保存文件夹">1. 创建模型保存文件夹</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /home/ma-user/work/limin/math_rl_project/models<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="2-下载指令">2. 下载指令</h3>
+<h4 id="2-1-直接下载到服务器">2.1 直接下载到服务器</h4>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 服务器终端执行</span>
+pip <span class="token function">install</span> modelscope
+modelscope download <span class="token parameter variable">--model</span> Qwen/Qwen3-8B <span class="token parameter variable">--local_dir</span> /home/ma-user/work/limin/models/Qwen3-8B
+<span class="token comment"># 备选 HuggingFace，借助国内镜像</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">HF_ENDPOINT</span><span class="token operator">=</span>https://hf-mirror.com
+pip <span class="token function">install</span> huggingface_hub
+hf download Qwen/Qwen3-8B --local-dir /home/ma-user/work/limin/models/Qwen3-8B<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>参数解释</strong>：</p>
+<ul>
+<li><code>export HF_ENDPOINT=...</code>：临时将 HF 下载域名切换为国内镜像站。</li>
+<li><code>--resume-download</code>：开启断点续传，如果中途网络卡顿断开，重新运行此命令会接着下载。</li>
+<li><code>--local-dir</code>：指定模型下载到本地的完整存放路径。</li>
+</ul>
+</blockquote>
+<h4 id="2-2-先下载到本地电脑，再上传到服务器（据说比较快）">2.2 先下载到本地电脑，再上传到服务器（据说比较快）</h4>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 如果本地电脑没有python</span>
+winget <span class="token function">install</span> Python.Python.3.11 <span class="token parameter variable">--override</span> <span class="token string">"/passive PrependPath=1"</span>
+
+<span class="token comment"># 使用 py 命令安装 modelscope</span>
+py <span class="token parameter variable">-m</span> pip <span class="token function">install</span> modelscope
+
+<span class="token comment"># 运行一键下载脚本到 D 盘</span>
+py <span class="token parameter variable">-c</span> <span class="token string">"from modelscope import snapshot_download; snapshot_download('Qwen/Qwen3-8B', local_dir=r'D:\models\Qwen3-8B')"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>以上方式我遇到了SSL证书拦截，通过使用以下download.py成功：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> urllib3
+<span class="token keyword">import</span> requests
+
+<span class="token comment"># 1. 禁用 SSL 警告提示</span>
+urllib3<span class="token punctuation">.</span>disable_warnings<span class="token punctuation">(</span>urllib3<span class="token punctuation">.</span>exceptions<span class="token punctuation">.</span>InsecureRequestWarning<span class="token punctuation">)</span>
+
+<span class="token comment"># 2. 核心破解：强行给 requests 所有请求加上 verify=False</span>
+old_request <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>request
+<span class="token keyword">def</span> <span class="token function">unsafe_request</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> method<span class="token punctuation">,</span> url<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    kwargs<span class="token punctuation">[</span><span class="token string">'verify'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">False</span>
+    <span class="token keyword">return</span> old_request<span class="token punctuation">(</span>self<span class="token punctuation">,</span> method<span class="token punctuation">,</span> url<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
+requests<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>request <span class="token operator">=</span> unsafe_request
+
+<span class="token comment"># 3. 开始下载模型</span>
+<span class="token keyword">from</span> modelscope <span class="token keyword">import</span> snapshot_download
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"开始连接 ModelScope 极速下载..."</span><span class="token punctuation">)</span>
+snapshot_download<span class="token punctuation">(</span><span class="token string">'Qwen/Qwen3-8B'</span><span class="token punctuation">,</span> local_dir<span class="token operator">=</span><span class="token string">r'D:\models\Qwen3-8B'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"🎉 下载完成！"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后在终端运行 <code>py download.py</code> 即可</p>
+<p>之后直接把下载的模型文件夹拉到服务器文件夹就好</p>
+<hr>
+<h2 id="四、-下载原始数据集与本地清洗">四、 下载原始数据集与本地清洗</h2>
+<p><strong>目的</strong>：下载数学数据集（以 AIME 2024 为例），并将其转换为 <code>verl</code> 训练框架能够直接读取的标准 <code>.parquet</code> 格式。</p>
+<h3 id="1-数据集直接下载到服务器（以下直接服务器终端执行）">1. 数据集直接下载到服务器（以下直接服务器终端执行）</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 忽略 SSL 证书校验，防止因为代理或网络证书报错</span>
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> http.sslVerify <span class="token boolean">false</span>
+
+hf download --repo-type dataset zwhe99/DeepMath-103K --local-dir ./data/DeepMath-103K
+hf download --repo-type dataset HuggingFaceH4/aime_2024 --local-dir /home/ma-user/work/limin/math_rl_project/data/AIME_raw<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-运行清洗数据脚本，将数据集翻译成-verl-专属的-parquet-格式">2. 运行清洗数据脚本，将数据集翻译成 verl 专属的 parquet 格式</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /home/ma-user/work/limin/math_rl_project/scripts
+<span class="token builtin class-name">cd</span> /home/ma-user/work/limin/math_rl_project/scripts
+
+python prepare_deepmath.py
+python prepare_aime.py<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>脚本<code>prepare_deepmath.py</code>内容如下：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> argparse
+<span class="token keyword">import</span> os
+<span class="token keyword">import</span> datasets
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    parser <span class="token operator">=</span> argparse<span class="token punctuation">.</span>ArgumentParser<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment"># 默认保存在我们刚刚建好的 data 目录下</span>
+    parser<span class="token punctuation">.</span>add_argument<span class="token punctuation">(</span><span class="token string">"--local_save_dir"</span><span class="token punctuation">,</span> default<span class="token operator">=</span><span class="token string">"/home/ma-user/work/limin/math_rl_project/data/processed_DeepMath"</span><span class="token punctuation">,</span> <span class="token builtin">help</span><span class="token operator">=</span><span class="token string">"The save directory"</span><span class="token punctuation">)</span>
+    args <span class="token operator">=</span> parser<span class="token punctuation">.</span>parse_args<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 1. 声明数据源名称 (给 verl 内部做标记用)</span>
+    data_source <span class="token operator">=</span> <span class="token string">"zwhe99/DeepMath-103K"</span>
+
+    <span class="token comment"># 2. 直接从你刚才下载的本地文件夹读取数据！极速加载不走网络</span>
+    local_data_path <span class="token operator">=</span> <span class="token string">"/home/ma-user/work/limin/math_rl_project/data/DeepMath-103K"</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"正在从本地读取数据集: </span><span class="token interpolation"><span class="token punctuation">{</span>local_data_path<span class="token punctuation">}</span></span><span class="token string"> ..."</span></span><span class="token punctuation">)</span>
+    
+    <span class="token comment"># 尝试加载本地数据集</span>
+    dataset <span class="token operator">=</span> datasets<span class="token punctuation">.</span>load_dataset<span class="token punctuation">(</span>local_data_path<span class="token punctuation">,</span> split<span class="token operator">=</span><span class="token string">"train"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">make_map_fn</span><span class="token punctuation">(</span>split<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">def</span> <span class="token function">process_fn</span><span class="token punctuation">(</span>example<span class="token punctuation">,</span> idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token comment"># 3. 提取问题和答案。DeepMath-103K 的真实列名是 'question' 和 'final_answer'</span>
+            question <span class="token operator">=</span> example<span class="token punctuation">[</span><span class="token string">'question'</span><span class="token punctuation">]</span>
+            solution <span class="token operator">=</span> example<span class="token punctuation">[</span><span class="token string">'final_answer'</span><span class="token punctuation">]</span>
+            
+            data <span class="token operator">=</span> <span class="token punctuation">{</span>
+                <span class="token string">"data_source"</span><span class="token punctuation">:</span> data_source<span class="token punctuation">,</span>
+                <span class="token string">"prompt"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+                    <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+                    <span class="token string">"content"</span><span class="token punctuation">:</span> question
+                <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">"ability"</span><span class="token punctuation">:</span> <span class="token string">"math"</span><span class="token punctuation">,</span>
+                <span class="token string">"reward_model"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                    <span class="token string">"style"</span><span class="token punctuation">:</span> <span class="token string">"rule"</span><span class="token punctuation">,</span>
+                    <span class="token string">"ground_truth"</span><span class="token punctuation">:</span> solution
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token string">"extra_info"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                    <span class="token string">'split'</span><span class="token punctuation">:</span> split<span class="token punctuation">,</span>
+                    <span class="token string">'index'</span><span class="token punctuation">:</span> idx
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> data
+        <span class="token keyword">return</span> process_fn
+
+    <span class="token comment"># 4. 开始多线程数据清洗转换</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"正在把数据翻译成 verl 专属的 parquet 格式..."</span><span class="token punctuation">)</span>
+    processed_dataset <span class="token operator">=</span> dataset<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>function<span class="token operator">=</span>make_map_fn<span class="token punctuation">(</span><span class="token string">"train"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> with_indices<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 5. 保存结果</span>
+    local_save_dir <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>expanduser<span class="token punctuation">(</span>args<span class="token punctuation">.</span>local_save_dir<span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>makedirs<span class="token punctuation">(</span>local_save_dir<span class="token punctuation">,</span> exist_ok<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    out_file <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>local_save_dir<span class="token punctuation">,</span> <span class="token string">"train.parquet"</span><span class="token punctuation">)</span>
+    
+    processed_dataset<span class="token punctuation">.</span>to_parquet<span class="token punctuation">(</span>out_file<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"✅ 大功告成！数据已完美转换并保存至: </span><span class="token interpolation"><span class="token punctuation">{</span>out_file<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>脚本<code>prepare_aime.py</code>内容如下：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> argparse
+<span class="token keyword">import</span> os
+<span class="token keyword">import</span> datasets
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    parser <span class="token operator">=</span> argparse<span class="token punctuation">.</span>ArgumentParser<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment"># 1. 默认保存路径：processed_AIME 目录</span>
+    parser<span class="token punctuation">.</span>add_argument<span class="token punctuation">(</span>
+        <span class="token string">"--local_save_dir"</span><span class="token punctuation">,</span> 
+        default<span class="token operator">=</span><span class="token string">"/home/ma-user/work/limin/math_rl_project/data/processed_AIME"</span><span class="token punctuation">,</span> 
+        <span class="token builtin">help</span><span class="token operator">=</span><span class="token string">"The save directory"</span>
+    <span class="token punctuation">)</span>
+    <span class="token comment"># 2. 默认本地原始数据路径：AIME_raw 目录</span>
+    parser<span class="token punctuation">.</span>add_argument<span class="token punctuation">(</span>
+        <span class="token string">"--local_data_path"</span><span class="token punctuation">,</span> 
+        default<span class="token operator">=</span><span class="token string">"/home/ma-user/work/limin/math_rl_project/data/AIME_raw"</span><span class="token punctuation">,</span> 
+        <span class="token builtin">help</span><span class="token operator">=</span><span class="token string">"The local raw dataset directory"</span>
+    <span class="token punctuation">)</span>
+    args <span class="token operator">=</span> parser<span class="token punctuation">.</span>parse_args<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 声明数据源名称 (给 verl 内部做标记用)</span>
+    data_source <span class="token operator">=</span> <span class="token string">"aime"</span>
+
+    <span class="token comment"># 直接从本地文件夹读取数据（纯本地加载，不走任何网络）</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"正在从本地读取数据集: </span><span class="token interpolation"><span class="token punctuation">{</span>args<span class="token punctuation">.</span>local_data_path<span class="token punctuation">}</span></span><span class="token string"> ..."</span></span><span class="token punctuation">)</span>
+    raw_dataset <span class="token operator">=</span> datasets<span class="token punctuation">.</span>load_dataset<span class="token punctuation">(</span>args<span class="token punctuation">.</span>local_data_path<span class="token punctuation">)</span>
+    
+    <span class="token comment"># 自动获取本地数据集中的 split 切片（通常为 'train'）</span>
+    split_key <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span>raw_dataset<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    dataset <span class="token operator">=</span> raw_dataset<span class="token punctuation">[</span>split_key<span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">make_map_fn</span><span class="token punctuation">(</span>split<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">def</span> <span class="token function">process_fn</span><span class="token punctuation">(</span>example<span class="token punctuation">,</span> idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token comment"># 提取问题和答案。AIME 数据集的真实列名是 'problem' 和 'answer'</span>
+            question <span class="token operator">=</span> example<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'problem'</span><span class="token punctuation">)</span> <span class="token keyword">or</span> example<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'question'</span><span class="token punctuation">)</span>
+            solution <span class="token operator">=</span> example<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'answer'</span><span class="token punctuation">)</span> <span class="token keyword">or</span> example<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'solution'</span><span class="token punctuation">)</span>
+            
+            data <span class="token operator">=</span> <span class="token punctuation">{</span>
+                <span class="token string">"data_source"</span><span class="token punctuation">:</span> data_source<span class="token punctuation">,</span>
+                <span class="token string">"prompt"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+                    <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+                    <span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">(</span>question<span class="token punctuation">)</span>
+                <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">"ability"</span><span class="token punctuation">:</span> <span class="token string">"math"</span><span class="token punctuation">,</span>
+                <span class="token string">"reward_model"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                    <span class="token string">"style"</span><span class="token punctuation">:</span> <span class="token string">"rule"</span><span class="token punctuation">,</span>
+                    <span class="token string">"ground_truth"</span><span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">(</span>solution<span class="token punctuation">)</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token string">"extra_info"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                    <span class="token string">'split'</span><span class="token punctuation">:</span> split<span class="token punctuation">,</span>
+                    <span class="token string">'index'</span><span class="token punctuation">:</span> idx
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> data
+        <span class="token keyword">return</span> process_fn
+
+    <span class="token comment"># 开始数据清洗转换</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"正在把数据翻译成 verl 专属的 parquet 格式..."</span><span class="token punctuation">)</span>
+    processed_dataset <span class="token operator">=</span> dataset<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>function<span class="token operator">=</span>make_map_fn<span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> with_indices<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 移除原始无用列，只保留 verl 规范字段</span>
+    keep_columns <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"data_source"</span><span class="token punctuation">,</span> <span class="token string">"prompt"</span><span class="token punctuation">,</span> <span class="token string">"ability"</span><span class="token punctuation">,</span> <span class="token string">"reward_model"</span><span class="token punctuation">,</span> <span class="token string">"extra_info"</span><span class="token punctuation">]</span>
+    remove_columns <span class="token operator">=</span> <span class="token punctuation">[</span>col <span class="token keyword">for</span> col <span class="token keyword">in</span> processed_dataset<span class="token punctuation">.</span>column_names <span class="token keyword">if</span> col <span class="token keyword">not</span> <span class="token keyword">in</span> keep_columns<span class="token punctuation">]</span>
+    processed_dataset <span class="token operator">=</span> processed_dataset<span class="token punctuation">.</span>remove_columns<span class="token punctuation">(</span>remove_columns<span class="token punctuation">)</span>
+
+    <span class="token comment"># 保存结果为 test.parquet（用于评估测试）</span>
+    local_save_dir <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>expanduser<span class="token punctuation">(</span>args<span class="token punctuation">.</span>local_save_dir<span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>makedirs<span class="token punctuation">(</span>local_save_dir<span class="token punctuation">,</span> exist_ok<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    out_file <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>local_save_dir<span class="token punctuation">,</span> <span class="token string">"test.parquet"</span><span class="token punctuation">)</span>
+    
+    processed_dataset<span class="token punctuation">.</span>to_parquet<span class="token punctuation">(</span>out_file<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"✅ 大功告成！AIME 测试集已完美转换并保存至: </span><span class="token interpolation"><span class="token punctuation">{</span>out_file<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>目的</strong>：将原始 JSON/Parquet 转为 <code>/home/ma-user/work/limin/math_rl_project/data/processed_AIME/test.parquet</code>，供 verl 评估测试。</p>
+</blockquote>
+<hr>
+<h2 id="五、-配置-Reward-Model-路由-init-py">五、 配置 Reward Model 路由 (<code>__init__.py</code>)</h2>
+<p><strong>目的</strong>：在 verl 框架中注册新的数据标识（<code>data_source = "aime"</code>），使得模型在得出回答后，系统知道使用“数学规则打分”来校验正确率。</p>
+<ol>
+<li>在 VS Code 中打开文件：<br>
+<code>verl/utils/reward_score/__init__.py</code></li>
+<li>找到 <code>default_compute_score</code> 函数，修改分支逻辑，加入 <code>"aime"</code>和<code>"zwhe99/DeepMath-103K"</code>：</li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">elif</span> data_source <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">"aime"</span><span class="token punctuation">,</span> <span class="token string">"zwhe99/DeepMath-103K"</span><span class="token punctuation">,</span> <span class="token string">"lighteval/MATH"</span><span class="token punctuation">,</span> <span class="token string">"openai/gsm8k"</span><span class="token punctuation">]</span> <span class="token keyword">or</span> data_source<span class="token punctuation">.</span>startswith<span class="token punctuation">(</span><span class="token string">"aime"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">from</span> <span class="token punctuation">.</span> <span class="token keyword">import</span> math
+    res <span class="token operator">=</span> math<span class="token punctuation">.</span>compute_score<span class="token punctuation">(</span>solution_str<span class="token punctuation">,</span> ground_truth<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<hr>
+<h2 id="六、-配置并启动强化学习训练脚本-run-grpo-sh">六、 配置并启动强化学习训练脚本 (<code>run_grpo.sh</code>)</h2>
+<p><strong>目的</strong>：编写包含环境清场、显卡绑定和参数配置的启动 Shell 脚本，一键拉起分布式强化学习训练。</p>
+<h3 id="1-创建并写入脚本内容（终端直接运行）">1. 创建并写入脚本内容（终端直接运行）</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在scripts文件夹中创建训练脚本run_qwen_dapo.sh</span>
+<span class="token builtin class-name">cd</span> /home/ma-user/work/limin/math_rl_project/scripts
+<span class="token comment"># 开训，但这个指令终端一旦异常终止训练就会中断，所以还是使用tmux后台运行</span>
+<span class="token function">bash</span> run_qwen_dapo.sh  
+<span class="token comment">#  开两个 tmux 窗口：一个跑训练，一个跑 TensorBoard</span>
+<span class="token builtin class-name">cd</span> /home/ma-user/work/limin/math_rl_project
+tmux new <span class="token parameter variable">-s</span> train
+<span class="token comment"># 1. 进入 tmux 后，运行训练：</span>
+<span class="token function">bash</span> scripts/run_qwen_dapo.sh
+<span class="token comment"># 2. 脱离（detach）tmux——让训练继续跑, 按这个组合键：先按 Ctrl+B，松开，再按 D</span>
+<span class="token comment"># 3. 随时接回来（attach）查看训练进度</span>
+tmux attach <span class="token parameter variable">-t</span> train
+<span class="token comment"># 4. 另开一个 tmux 会话跑 TensorBoard</span>
+<span class="token comment"># 先脱离当前会话（Ctrl+B 然后 D），再新建一个：</span>
+tmux new <span class="token parameter variable">-s</span> tb
+<span class="token comment"># 进入 tb 会话后执行：</span>
+<span class="token builtin class-name">cd</span> /home/ma-user/work/limin/math_rl_project
+tensorboard <span class="token parameter variable">--logdir</span> scripts/logs/DeepMath-103K-Aime-DAPO/Qwen3-8B-base-0KPEN-32K-RIS0-lr1e-6/tensorboard <span class="token parameter variable">--port</span> <span class="token number">6006</span> <span class="token parameter variable">--bind_all</span>
+<span class="token comment"># 然后脱离这个 tmux（Ctrl+B 然后 D），TensorBoard 就在后台持续跑了。</span>
+<span class="token comment"># 5. 点开终端选项里的端口，然后选择6006端口在浏览器中打开，就可以看到tensorboard</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env bash</span>
+
+export CUDA_VISIBLE_DEVICES<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token number">7</span>
+<span class="token builtin">set</span> <span class="token operator">-</span>xeuo pipefail
+
+export TMPDIR<span class="token operator">=</span><span class="token operator">/</span>tmp
+export TEMP<span class="token operator">=</span><span class="token operator">/</span>tmp
+export TMP<span class="token operator">=</span><span class="token operator">/</span>tmp
+
+
+lr<span class="token operator">=</span><span class="token number">1e-6</span>
+sp_size<span class="token operator">=</span><span class="token number">8</span>   <span class="token comment"># 总卡数 = FSDP数据并行度 × SP序列并行度</span>
+gen_tp<span class="token operator">=</span><span class="token number">8</span>  <span class="token comment"># vLLM用4张卡并行生成答案</span>
+offload<span class="token operator">=</span><span class="token boolean">False</span>
+temperature<span class="token operator">=</span><span class="token number">1.0</span>
+top_p<span class="token operator">=</span><span class="token number">1.0</span>
+top_k<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>
+val_top_p<span class="token operator">=</span><span class="token number">1.0</span>
+use_dynamic_bsz<span class="token operator">=</span><span class="token boolean">False</span>
+infer_ppo_max_token_len<span class="token operator">=</span>$<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">9</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+project_name<span class="token operator">=</span><span class="token string">"DeepMath-103K-Aime-DAPO"</span>
+exp_name<span class="token operator">=</span><span class="token string">'Qwen3-8B-base-0KPEN-32K-RIS0-lr1e-6'</span>
+adv_estimator<span class="token operator">=</span>grpo
+
+use_kl_in_reward<span class="token operator">=</span><span class="token boolean">False</span>
+kl_coef<span class="token operator">=</span><span class="token number">0.0</span>
+use_kl_loss<span class="token operator">=</span><span class="token boolean">False</span>
+kl_loss_coef<span class="token operator">=</span><span class="token number">0.0</span>
+
+clip_ratio_low<span class="token operator">=</span><span class="token number">0.2</span>
+clip_ratio_high<span class="token operator">=</span><span class="token number">0.28</span>
+
+max_prompt_length<span class="token operator">=</span>$<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 2K</span>
+max_response_length<span class="token operator">=</span>$<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">32</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 32K</span>
+enable_overlong_buffer<span class="token operator">=</span><span class="token boolean">False</span>
+overlong_buffer_len<span class="token operator">=</span>$<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+overlong_penalty_factor<span class="token operator">=</span><span class="token number">1.0</span>
+
+loss_agg_mode<span class="token operator">=</span><span class="token string">"token-mean"</span>
+
+train_prompt_bsz<span class="token operator">=</span><span class="token number">128</span>  <span class="token comment">#128</span>
+n_resp_per_prompt<span class="token operator">=</span><span class="token number">8</span>  <span class="token comment"># 8</span>
+train_prompt_mini_bsz<span class="token operator">=</span><span class="token number">128</span> <span class="token comment"># 128</span>
+train_prompt_micro_bsz<span class="token operator">=</span><span class="token number">1</span>  <span class="token comment"># 128</span>
+
+NNODES<span class="token operator">=</span>$<span class="token punctuation">{</span>NNODES<span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">}</span>
+NGPUS_PER_NODE<span class="token operator">=</span>$<span class="token punctuation">{</span>NGPUS_PER_NODE<span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">8</span><span class="token punctuation">}</span>  <span class="token comment"># 4</span>
+
+<span class="token comment"># Paths</span>
+BASE_DIR<span class="token operator">=</span><span class="token string">"/home/ma-user/work/limin/math_rl_project"</span>
+TRAIN_FILE<span class="token operator">=</span><span class="token string">"${BASE_DIR}/data/processed_DeepMath/train.parquet"</span>
+TEST_FILE<span class="token operator">=</span><span class="token string">"${BASE_DIR}/data/processed_AIME/test.parquet"</span>
+<span class="token comment"># MODEL_PATH="/home/ma-user/work/lijifu/Modelzoo/Qwen3-8B"</span>
+MODEL_PATH<span class="token operator">=</span><span class="token string">"/home/ma-user/work/limin/math_rl_project/models/Qwen3-8B-Base"</span>
+CKPTS_DIR<span class="token operator">=</span><span class="token string">"${BASE_DIR}/checkpoints/${project_name}/${exp_name}"</span>
+
+<span class="token comment"># 日志按"项目/实验"分文件夹 + 时间戳：换模型/数据集时改 project_name/exp_name，</span>
+<span class="token comment"># 日志自动归到新文件夹，跟 checkpoint 路径结构对齐，不会混在一起</span>
+LOG_DIR<span class="token operator">=</span><span class="token string">"${BASE_DIR}/scripts/logs/${project_name}/${exp_name}"</span>
+mkdir <span class="token operator">-</span>p <span class="token string">"${LOG_DIR}"</span>
+LOG_FILE<span class="token operator">=</span><span class="token string">"${LOG_DIR}/train_$(date +%Y%m%d_%H%M%S).log"</span>
+
+<span class="token comment"># TensorBoard 事件文件也固定到同一实验目录下（verl 读 TENSORBOARD_DIR 环境变量）</span>
+<span class="token comment"># 这样文字日志和 TB 事件都在 scripts/logs/项目/实验/ 下，结构清晰</span>
+export TENSORBOARD_DIR<span class="token operator">=</span><span class="token string">"${LOG_DIR}/tensorboard"</span>
+mkdir <span class="token operator">-</span>p <span class="token string">"${TENSORBOARD_DIR}"</span>
+
+<span class="token comment"># ===== 启动前自检：关键文件/资源缺失直接退出，避免跑到中途才爆 =====</span>
+echo <span class="token string">"==================== 启动前自检 ===================="</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span>
+err<span class="token operator">=</span><span class="token number">0</span>
+<span class="token punctuation">[</span> <span class="token operator">-</span>f <span class="token string">"${MODEL_PATH}/config.json"</span> <span class="token punctuation">]</span> <span class="token operator">|</span><span class="token operator">|</span> <span class="token punctuation">{</span> echo <span class="token string">"[FAIL] 模型路径不存在或无 config.json: ${MODEL_PATH}"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span><span class="token punctuation">;</span> err<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">[</span> <span class="token operator">-</span>f <span class="token string">"${TRAIN_FILE}"</span> <span class="token punctuation">]</span> <span class="token operator">|</span><span class="token operator">|</span> <span class="token punctuation">{</span> echo <span class="token string">"[FAIL] 训练数据不存在: ${TRAIN_FILE}"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span><span class="token punctuation">;</span> err<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">[</span> <span class="token operator">-</span>f <span class="token string">"${TEST_FILE}"</span> <span class="token punctuation">]</span> <span class="token operator">|</span><span class="token operator">|</span> <span class="token punctuation">{</span> echo <span class="token string">"[FAIL] 验证数据不存在: ${TEST_FILE}"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span><span class="token punctuation">;</span> err<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+mkdir <span class="token operator">-</span>p <span class="token string">"${CKPTS_DIR}"</span> <span class="token operator">|</span><span class="token operator">|</span> <span class="token punctuation">{</span> echo <span class="token string">"[FAIL] 无法创建 checkpoint 目录: ${CKPTS_DIR}"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span><span class="token punctuation">;</span> err<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token comment"># 输出盘剩余空间检查（&lt;500GB 告警）</span>
+AVAIL_GB<span class="token operator">=</span>$<span class="token punctuation">(</span>df <span class="token operator">-</span>BG <span class="token operator">-</span><span class="token operator">-</span>output<span class="token operator">=</span>avail <span class="token string">"${CKPTS_DIR}"</span> <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">/</span>dev<span class="token operator">/</span>null <span class="token operator">|</span> tail <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">|</span> tr <span class="token operator">-</span>dc <span class="token string">'0-9'</span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span> <span class="token operator">-</span>n <span class="token string">"${AVAIL_GB}"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;</span><span class="token operator">&amp;</span> <span class="token punctuation">[</span> <span class="token string">"${AVAIL_GB}"</span> <span class="token operator">-</span>lt <span class="token number">500</span> <span class="token punctuation">]</span> <span class="token operator">&amp;</span><span class="token operator">&amp;</span> echo <span class="token string">"[WARN] 输出盘剩余空间不足: ${AVAIL_GB}GB（96%+ 满过，小心 ENOSPC）"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span>
+<span class="token comment"># GPU 是否被占用</span>
+GPU_USED<span class="token operator">=</span>$<span class="token punctuation">(</span>nvidia<span class="token operator">-</span>smi <span class="token operator">-</span><span class="token operator">-</span>query<span class="token operator">-</span>gpu<span class="token operator">=</span>memory<span class="token punctuation">.</span>used <span class="token operator">-</span><span class="token operator">-</span><span class="token builtin">format</span><span class="token operator">=</span>csv<span class="token punctuation">,</span>noheader<span class="token punctuation">,</span>nounits <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">/</span>dev<span class="token operator">/</span>null <span class="token operator">|</span> awk <span class="token string">'$1&gt;100{c++} END{print c+0}'</span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span> <span class="token string">"${GPU_USED}"</span> <span class="token operator">-</span>gt <span class="token number">0</span> <span class="token punctuation">]</span> <span class="token operator">&amp;</span><span class="token operator">&amp;</span> echo <span class="token string">"[WARN] 有 ${GPU_USED} 张 GPU 显存被占用（&gt;100MiB），可能残留进程"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span>
+<span class="token punctuation">[</span> <span class="token string">"${err}"</span> <span class="token operator">-</span>ne <span class="token number">0</span> <span class="token punctuation">]</span> <span class="token operator">&amp;</span><span class="token operator">&amp;</span> <span class="token punctuation">{</span> echo <span class="token string">"[FAIL] 自检未通过，退出。"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span><span class="token punctuation">;</span> exit <span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+echo <span class="token string">"[OK] 自检通过"</span> <span class="token operator">|</span> tee <span class="token operator">-</span>a <span class="token string">"${LOG_FILE}"</span>
+
+<span class="token comment"># ===== 环境快照写入日志头部，崩溃时第一眼可查（上次 OOM 就是靠反推） =====</span>
+<span class="token punctuation">{</span>
+  echo <span class="token string">"==================== 环境快照 $(date) ===================="</span>
+  echo <span class="token string">"--- 主机/容器 ---"</span><span class="token punctuation">;</span> uname <span class="token operator">-</span>a<span class="token punctuation">;</span> cat <span class="token operator">/</span>etc<span class="token operator">/</span>os<span class="token operator">-</span>release <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">/</span>dev<span class="token operator">/</span>null <span class="token operator">|</span> grep PRETTY_NAME
+  echo <span class="token string">"--- 内存 ---"</span><span class="token punctuation">;</span> free <span class="token operator">-</span>h
+  echo <span class="token string">"--- cgroup 内存上限 ---"</span><span class="token punctuation">;</span> cat <span class="token operator">/</span>sys<span class="token operator">/</span>fs<span class="token operator">/</span>cgroup<span class="token operator">/</span>memory<span class="token operator">/</span>memory<span class="token punctuation">.</span>limit_in_bytes <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">/</span>dev<span class="token operator">/</span>null
+  echo <span class="token string">"--- 磁盘 ---"</span><span class="token punctuation">;</span> df <span class="token operator">-</span>h <span class="token string">"${BASE_DIR}"</span> <span class="token operator">/</span>tmp
+  echo <span class="token string">"--- GPU ---"</span><span class="token punctuation">;</span> nvidia<span class="token operator">-</span>smi <span class="token operator">-</span><span class="token operator">-</span>query<span class="token operator">-</span>gpu<span class="token operator">=</span>index<span class="token punctuation">,</span>name<span class="token punctuation">,</span>memory<span class="token punctuation">.</span>total<span class="token punctuation">,</span>memory<span class="token punctuation">.</span>used<span class="token punctuation">,</span>utilization<span class="token punctuation">.</span>gpu <span class="token operator">-</span><span class="token operator">-</span><span class="token builtin">format</span><span class="token operator">=</span>csv <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">/</span>dev<span class="token operator">/</span>null
+  echo <span class="token string">"--- 关键变量 ---"</span><span class="token punctuation">;</span> echo <span class="token string">"MODEL_PATH=${MODEL_PATH}"</span><span class="token punctuation">;</span> echo <span class="token string">"CKPTS_DIR=${CKPTS_DIR}"</span><span class="token punctuation">;</span> echo <span class="token string">"LOG_FILE=${LOG_FILE}"</span><span class="token punctuation">;</span> echo <span class="token string">"TENSORBOARD_DIR=${TENSORBOARD_DIR}"</span>
+  echo <span class="token string">"================================================================"</span>
+<span class="token punctuation">}</span> <span class="token operator">&gt;&gt;</span> <span class="token string">"${LOG_FILE}"</span>
+
+echo <span class="token string">"日志输出到: ${LOG_FILE}"</span>
+echo <span class="token string">"查看实时日志: tail -f ${LOG_FILE}"</span>
+echo <span class="token string">"TensorBoard 启动: tensorboard --logdir ${TENSORBOARD_DIR} --port 6006 --bind_all"</span>
+
+<span class="token comment"># 清理掉上一次运行可能残余的 Ray 进程和显存占用</span>
+ray stop <span class="token operator">-</span><span class="token operator">-</span>force <span class="token operator">|</span><span class="token operator">|</span> true
+pkill <span class="token operator">-</span><span class="token number">9</span> <span class="token operator">-</span>f ray <span class="token operator">|</span><span class="token operator">|</span> true
+sleep <span class="token number">2</span>
+
+python <span class="token operator">-</span>m verl<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>main_ppo \
+    data<span class="token punctuation">.</span>train_files<span class="token operator">=</span><span class="token string">"${TRAIN_FILE}"</span> \
+    data<span class="token punctuation">.</span>val_files<span class="token operator">=</span><span class="token string">"${TEST_FILE}"</span> \
+    data<span class="token punctuation">.</span>prompt_key<span class="token operator">=</span>prompt \
+    data<span class="token punctuation">.</span>truncation<span class="token operator">=</span><span class="token string">'left'</span> \
+    data<span class="token punctuation">.</span>max_prompt_length<span class="token operator">=</span>$<span class="token punctuation">{</span>max_prompt_length<span class="token punctuation">}</span> \
+    data<span class="token punctuation">.</span>max_response_length<span class="token operator">=</span>$<span class="token punctuation">{</span>max_response_length<span class="token punctuation">}</span> \
+    data<span class="token punctuation">.</span>train_batch_size<span class="token operator">=</span>$<span class="token punctuation">{</span>train_prompt_bsz<span class="token punctuation">}</span> \
+    data<span class="token punctuation">.</span>filter_overlong_prompts<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>strategy<span class="token operator">=</span>fsdp2 \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>n<span class="token operator">=</span>$<span class="token punctuation">{</span>n_resp_per_prompt<span class="token punctuation">}</span> \
+    algorithm<span class="token punctuation">.</span>adv_estimator<span class="token operator">=</span>$<span class="token punctuation">{</span>adv_estimator<span class="token punctuation">}</span> \
+    algorithm<span class="token punctuation">.</span>use_kl_in_reward<span class="token operator">=</span>$<span class="token punctuation">{</span>use_kl_in_reward<span class="token punctuation">}</span> \
+    algorithm<span class="token punctuation">.</span>kl_ctrl<span class="token punctuation">.</span>kl_coef<span class="token operator">=</span>$<span class="token punctuation">{</span>kl_coef<span class="token punctuation">}</span> \
+    algorithm<span class="token punctuation">.</span>rollout_correction<span class="token punctuation">.</span>bypass_mode<span class="token operator">=</span><span class="token boolean">False</span> \
+    algorithm<span class="token punctuation">.</span>rollout_correction<span class="token punctuation">.</span>rollout_is<span class="token operator">=</span>token \
+    algorithm<span class="token punctuation">.</span>rollout_correction<span class="token punctuation">.</span>rollout_is_threshold<span class="token operator">=</span><span class="token number">5.0</span> \
+    algorithm<span class="token punctuation">.</span>rollout_correction<span class="token punctuation">.</span>rollout_is_batch_normalize<span class="token operator">=</span><span class="token boolean">False</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>use_kl_loss<span class="token operator">=</span>$<span class="token punctuation">{</span>use_kl_loss<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>kl_loss_coef<span class="token operator">=</span>$<span class="token punctuation">{</span>kl_loss_coef<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>clip_ratio_low<span class="token operator">=</span>$<span class="token punctuation">{</span>clip_ratio_low<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>clip_ratio_high<span class="token operator">=</span>$<span class="token punctuation">{</span>clip_ratio_high<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>clip_ratio_c<span class="token operator">=</span><span class="token number">10.0</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>use_remove_padding<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>use_dynamic_bsz<span class="token operator">=</span>$<span class="token punctuation">{</span>use_dynamic_bsz<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>ref<span class="token punctuation">.</span>log_prob_use_dynamic_bsz<span class="token operator">=</span>$<span class="token punctuation">{</span>use_dynamic_bsz<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>log_prob_use_dynamic_bsz<span class="token operator">=</span>$<span class="token punctuation">{</span>use_dynamic_bsz<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>ref<span class="token punctuation">.</span>log_prob_max_token_len_per_gpu<span class="token operator">=</span>$<span class="token punctuation">{</span>infer_ppo_max_token_len<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>log_prob_max_token_len_per_gpu<span class="token operator">=</span>$<span class="token punctuation">{</span>infer_ppo_max_token_len<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>name<span class="token operator">=</span>vllm \
+    actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>path<span class="token operator">=</span><span class="token string">"${MODEL_PATH}"</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>trust_remote_code<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>enable_gradient_checkpointing<span class="token operator">=</span><span class="token boolean">True</span> \
+    <span class="token operator">+</span>actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>override_config<span class="token punctuation">.</span>attn_implementation<span class="token operator">=</span>flash_attention_2 \
+    <span class="token operator">+</span>actor_rollout_ref<span class="token punctuation">.</span>model<span class="token punctuation">.</span>override_config<span class="token punctuation">.</span>dtype<span class="token operator">=</span>bfloat16 \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>lr<span class="token operator">=</span>$<span class="token punctuation">{</span>lr<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>weight_decay<span class="token operator">=</span><span class="token number">0.1</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>ppo_mini_batch_size<span class="token operator">=</span>$<span class="token punctuation">{</span>train_prompt_mini_bsz<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>ppo_micro_batch_size_per_gpu<span class="token operator">=</span>$<span class="token punctuation">{</span>train_prompt_micro_bsz<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>fsdp_config<span class="token punctuation">.</span>param_offload<span class="token operator">=</span>$<span class="token punctuation">{</span>offload<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>fsdp_config<span class="token punctuation">.</span>optimizer_offload<span class="token operator">=</span>$<span class="token punctuation">{</span>offload<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>entropy_coeff<span class="token operator">=</span><span class="token number">0</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>grad_clip<span class="token operator">=</span><span class="token number">1.0</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>loss_agg_mode<span class="token operator">=</span>$<span class="token punctuation">{</span>loss_agg_mode<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>actor<span class="token punctuation">.</span>ulysses_sequence_parallel_size<span class="token operator">=</span>$<span class="token punctuation">{</span>sp_size<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>gpu_memory_utilization<span class="token operator">=</span><span class="token number">0.50</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>tensor_model_parallel_size<span class="token operator">=</span>$<span class="token punctuation">{</span>gen_tp<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>enable_chunked_prefill<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>max_num_batched_tokens<span class="token operator">=</span>$<span class="token punctuation">(</span><span class="token punctuation">(</span>max_prompt_length <span class="token operator">+</span> max_response_length<span class="token punctuation">)</span><span class="token punctuation">)</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>temperature<span class="token operator">=</span>$<span class="token punctuation">{</span>temperature<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>top_p<span class="token operator">=</span>$<span class="token punctuation">{</span>top_p<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>top_k<span class="token operator">=</span>$<span class="token punctuation">{</span>top_k<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>val_kwargs<span class="token punctuation">.</span>temperature<span class="token operator">=</span>$<span class="token punctuation">{</span>temperature<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>val_kwargs<span class="token punctuation">.</span>top_p<span class="token operator">=</span>$<span class="token punctuation">{</span>val_top_p<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>val_kwargs<span class="token punctuation">.</span>top_k<span class="token operator">=</span>$<span class="token punctuation">{</span>top_k<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>val_kwargs<span class="token punctuation">.</span>do_sample<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>val_kwargs<span class="token punctuation">.</span>n<span class="token operator">=</span><span class="token number">8</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>calculate_log_probs<span class="token operator">=</span><span class="token boolean">True</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>rollout<span class="token punctuation">.</span>log_prob_micro_batch_size_per_gpu<span class="token operator">=</span><span class="token number">2</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>ref<span class="token punctuation">.</span>fsdp_config<span class="token punctuation">.</span>param_offload<span class="token operator">=</span>$<span class="token punctuation">{</span>offload<span class="token punctuation">}</span> \
+    actor_rollout_ref<span class="token punctuation">.</span>ref<span class="token punctuation">.</span>ulysses_sequence_parallel_size<span class="token operator">=</span>$<span class="token punctuation">{</span>sp_size<span class="token punctuation">}</span> \
+    reward_model<span class="token punctuation">.</span>reward_manager<span class="token operator">=</span>dapo \
+    <span class="token operator">+</span>reward_model<span class="token punctuation">.</span>reward_kwargs<span class="token punctuation">.</span>overlong_buffer_cfg<span class="token punctuation">.</span>enable<span class="token operator">=</span>$<span class="token punctuation">{</span>enable_overlong_buffer<span class="token punctuation">}</span> \
+    <span class="token operator">+</span>reward_model<span class="token punctuation">.</span>reward_kwargs<span class="token punctuation">.</span>overlong_buffer_cfg<span class="token punctuation">.</span><span class="token builtin">len</span><span class="token operator">=</span>$<span class="token punctuation">{</span>overlong_buffer_len<span class="token punctuation">}</span> \
+    <span class="token operator">+</span>reward_model<span class="token punctuation">.</span>reward_kwargs<span class="token punctuation">.</span>overlong_buffer_cfg<span class="token punctuation">.</span>penalty_factor<span class="token operator">=</span>$<span class="token punctuation">{</span>overlong_penalty_factor<span class="token punctuation">}</span> \
+    <span class="token operator">+</span>reward_model<span class="token punctuation">.</span>reward_kwargs<span class="token punctuation">.</span>overlong_buffer_cfg<span class="token punctuation">.</span>log<span class="token operator">=</span><span class="token boolean">False</span> \
+    <span class="token operator">+</span>reward_model<span class="token punctuation">.</span>reward_kwargs<span class="token punctuation">.</span>max_resp_len<span class="token operator">=</span>$<span class="token punctuation">{</span>max_response_length<span class="token punctuation">}</span> \
+    trainer<span class="token punctuation">.</span>logger<span class="token operator">=</span><span class="token string">'["console","tensorboard"]'</span> \
+    trainer<span class="token punctuation">.</span>project_name<span class="token operator">=</span><span class="token string">"${project_name}"</span> \
+    trainer<span class="token punctuation">.</span>experiment_name<span class="token operator">=</span><span class="token string">"${exp_name}"</span> \
+    trainer<span class="token punctuation">.</span>n_gpus_per_node<span class="token operator">=</span><span class="token string">"${NGPUS_PER_NODE}"</span> \
+    trainer<span class="token punctuation">.</span>nnodes<span class="token operator">=</span><span class="token string">"${NNODES}"</span> \
+    trainer<span class="token punctuation">.</span>val_before_train<span class="token operator">=</span><span class="token boolean">True</span> \
+    trainer<span class="token punctuation">.</span>test_freq<span class="token operator">=</span><span class="token number">2</span> \
+    trainer<span class="token punctuation">.</span>save_freq<span class="token operator">=</span><span class="token number">10</span> \
+    trainer<span class="token punctuation">.</span>total_epochs<span class="token operator">=</span><span class="token number">1</span> \
+    trainer<span class="token punctuation">.</span>default_local_dir<span class="token operator">=</span><span class="token string">"${CKPTS_DIR}"</span> \
+    trainer<span class="token punctuation">.</span>resume_mode<span class="token operator">=</span>auto \
+    trainer<span class="token punctuation">.</span>max_actor_ckpt_to_keep<span class="token operator">=</span><span class="token number">3</span> \
+    trainer<span class="token punctuation">.</span>log_val_generations<span class="token operator">=</span><span class="token number">10</span> <span class="token number">2</span><span class="token operator">&gt;</span><span class="token operator">&amp;</span><span class="token number">1</span> <span class="token operator">|</span> tee <span class="token string">"${LOG_FILE}"</span>
+<span class="token comment"># resume_mode=auto 语义：首次跑（CKPTS_DIR 为空）从头训练；中断后重跑会自动从 latest_checkpointed_iteration.txt 指向的 step 续训。</span>
+<span class="token comment">#</span>
+<span class="token comment"># ===== 推荐在 tmux 里跑（而非直接在 VS Code/SSH 终端跑）=====</span>
+<span class="token comment"># tmux 会话不受终端断开/VS Code 崩溃影响，训练不会因 ^C 连坐被杀。用法：</span>
+<span class="token comment">#   tmux new -s train              # 新建名为 train 的会话</span>
+<span class="token comment">#   bash scripts/run_qwen_grpo.sh  # 在里面跑训练（前台，可看实时进度条）</span>
+<span class="token comment">#   按 Ctrl+B 然后按 D              # 脱离（detach），训练继续在后台跑</span>
+<span class="token comment">#   tmux attach -t train            # 随时回来查看</span>
+<span class="token comment">#   tmux ls                         # 列出所有会话</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-tmux-终端复用器使用指南">2. tmux 终端复用器使用指南</h3>
+<h3 id="功能说明">功能说明</h3>
+<p>tmux（Terminal Multiplexer）是一个终端复用器，允许在单个终端窗口中管理多个会话和窗格。在深度学习训练中，tmux 非常适合用于在远程服务器上长时间运行训练任务，即使断开 SSH 连接，训练也会继续在后台运行。</p>
+<h3 id="常用指令">常用指令</h3>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tmux new -s &lt;名称&gt;</code></td>
+<td>创建新的命名会话</td>
+</tr>
+<tr>
+<td><code>tmux ls</code></td>
+<td>列出所有会话</td>
+</tr>
+<tr>
+<td><code>tmux attach -t &lt;名称&gt;</code> / <code>tmux a -t &lt;名称&gt;</code></td>
+<td>连接到指定会话</td>
+</tr>
+<tr>
+<td><code>tmux detach</code> / <code>Ctrl+b d</code></td>
+<td>分离当前会话（后台运行）</td>
+</tr>
+<tr>
+<td><code>tmux kill-session -t &lt;名称&gt;</code></td>
+<td>终止指定会话</td>
+</tr>
+<tr>
+<td><code>tmux kill-server</code></td>
+<td>终止所有会话</td>
+</tr>
+<tr>
+<td><code>tmux split-window</code></td>
+<td>水平分割窗格（上下）</td>
+</tr>
+<tr>
+<td><code>tmux split-window -h</code></td>
+<td>垂直分割窗格（左右）</td>
+</tr>
+<tr>
+<td><code>tmux new-window</code> / <code>Ctrl+b c</code></td>
+<td>创建新窗口</td>
+</tr>
+<tr>
+<td><code>Ctrl+b 方向键</code></td>
+<td>切换窗格</td>
+</tr>
+<tr>
+<td><code>Ctrl+b n</code></td>
+<td>切换到下一个窗口</td>
+</tr>
+<tr>
+<td><code>Ctrl+b p</code></td>
+<td>切换到上一个窗口</td>
+</tr>
+<tr>
+<td><code>Ctrl+b &amp;</code></td>
+<td>关闭当前窗口</td>
+</tr>
+<tr>
+<td><code>Ctrl+b x</code></td>
+<td>关闭当前窗格</td>
+</tr>
+<tr>
+<td><code>Ctrl+b [</code></td>
+<td>进入复制模式（可滚动查看历史输出）</td>
+</tr>
+<tr>
+<td><code>Ctrl+b z</code></td>
+<td>当前窗格全屏/恢复</td>
+</tr>
+<tr>
+<td><code>Ctrl+b 数字键</code></td>
+<td>切换到对应编号的窗口</td>
+</tr>
+</tbody>
+</table>
+<h3 id="典型使用场景">典型使用场景</h3>
+<p>在训练模型时，推荐的工作流程：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1. 创建训练会话</span>
+tmux new <span class="token parameter variable">-s</span> train
+
+<span class="token comment"># 2. 在会话中分割窗格</span>
+<span class="token comment">#    按 Ctrl+b " 水平分割（上下两个窗格）</span>
+
+<span class="token comment"># 3. 上方窗格运行训练脚本</span>
+python train.py
+
+<span class="token comment"># 4. 下方窗格启动 TensorBoard</span>
+tensorboard <span class="token parameter variable">--logdir</span><span class="token operator">=</span>logs <span class="token parameter variable">--port</span><span class="token operator">=</span><span class="token number">6006</span>
+
+<span class="token comment"># 5. 分离会话（训练继续在后台运行）</span>
+<span class="token comment">#    按 Ctrl+b d</span>
+
+<span class="token comment"># 6. 随时重新连接查看进度</span>
+tmux attach <span class="token parameter variable">-t</span> train<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1>Tensorboard中各个指标的意义</h1>
+<h2 id="actor-面板下核心指标"><code>actor</code> 面板下核心指标</h2>
+<h3 id="1-actor-loss-actor-pg-loss">1. <code>actor/loss</code> &amp; <code>actor/pg_loss</code></h3>
+<ul>
+<li><strong>含义</strong>：
+<ul>
+<li><code>pg_loss</code> (Policy Gradient Loss)：PPO 算法的核心策略梯度损失，指导模型根据优势函数调整生成概率。</li>
+<li><code>actor/loss</code>：通常为 <code>pg_loss</code> 加上正则化项（如 KL 惩罚或熵正则化）后的总损失。</li>
+</ul>
+</li>
+<li><strong>计算公式</strong>：<br>
+<mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -1.469ex;" xmlns="http://www.w3.org/2000/svg" width="53.205ex" height="4.07ex" role="img" focusable="false" viewBox="0 -1149.5 23516.8 1799"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path></g><g data-mml-node="TeXAtom" transform="translate(714,413) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="mi" transform="translate(760,0)"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path></g><g data-mml-node="mi" transform="translate(1441,0)"><path data-c="1D43C" d="M43 1Q26 1 26 10Q26 12 29 24Q34 43 39 45Q42 46 54 46H60Q120 46 136 53Q137 53 138 54Q143 56 149 77T198 273Q210 318 216 344Q286 624 286 626Q284 630 284 631Q274 637 213 637H193Q184 643 189 662Q193 677 195 680T209 683H213Q285 681 359 681Q481 681 487 683H497Q504 676 504 672T501 655T494 639Q491 637 471 637Q440 637 407 634Q393 631 388 623Q381 609 337 432Q326 385 315 341Q245 65 245 59Q245 52 255 50T307 46H339Q345 38 345 37T342 19Q338 6 332 0H316Q279 2 179 2Q143 2 113 2T65 2T43 1Z"></path></g><g data-mml-node="mi" transform="translate(1945,0)"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path></g></g></g><g data-mml-node="mo" transform="translate(2948.1,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mo" transform="translate(4003.9,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="msub" transform="translate(4781.9,0)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D53C" d="M12 666Q12 675 24 683H582Q590 680 593 672V588Q593 514 591 502T575 490Q567 490 563 495T555 517Q552 556 517 590Q486 623 445 634T340 648H282Q266 636 264 620T260 492V370H277Q329 375 358 391T404 439Q420 480 420 506Q420 529 436 529Q445 529 451 521Q455 517 455 361Q455 333 455 298T456 253Q456 217 453 207T437 197Q420 196 420 217Q420 240 406 270Q377 328 284 335H260V201Q261 174 261 134Q262 73 264 61T278 38Q281 36 282 35H331Q400 35 449 50Q571 93 602 179Q605 203 622 203Q629 203 634 197T640 183Q638 181 624 95T604 3L600 -1H24Q12 5 12 16Q12 35 51 35Q92 38 97 52Q102 60 102 341T97 632Q91 645 51 648Q12 648 12 666ZM137 341Q137 131 136 89T130 37Q129 36 129 35H235Q233 41 231 48L226 61V623L231 635L235 648H129Q132 641 133 638T135 603T137 517T137 341ZM557 603V648H504Q504 646 515 639Q527 634 542 619L557 603ZM420 317V397L406 383Q394 370 380 363L366 355Q373 350 382 346Q400 333 409 328L420 317ZM582 61L586 88Q585 88 582 83Q557 61 526 46L511 37L542 35H577Q577 36 578 39T580 49T582 61Z"></path></g></g><g data-mml-node="mi" transform="translate(700,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mrow" transform="translate(5953.8,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="5B" d="M224 -649V1150H455V1099H275V-598H455V-649H224Z"></path></g><g data-mml-node="mo" transform="translate(472,0)"><path data-c="6D" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q351 442 364 440T387 434T406 426T421 417T432 406T441 395T448 384T452 374T455 366L457 361L460 365Q463 369 466 373T475 384T488 397T503 410T523 422T546 432T572 439T603 442Q729 442 740 329Q741 322 741 190V104Q741 66 743 59T754 49Q775 46 803 46H819V0H811L788 1Q764 2 737 2T699 3Q596 3 587 0H579V46H595Q656 46 656 62Q657 64 657 200Q656 335 655 343Q649 371 635 385T611 402T585 404Q540 404 506 370Q479 343 472 315T464 232V168V108Q464 78 465 68T468 55T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(833,0)"></path><path data-c="6E" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q450 438 463 329Q464 322 464 190V104Q464 66 466 59T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z" transform="translate(1111,0)"></path></g><g data-mml-node="mo" transform="translate(2139,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="msub" transform="translate(2528,0)"><g data-mml-node="mi"><path data-c="1D45F" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(484,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(3317.3,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(3706.3,0)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g><g data-mml-node="mo" transform="translate(4175.3,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="msub" transform="translate(4564.3,0)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mover"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></g><g data-mml-node="mo" transform="translate(514,290) translate(-250 0)"><path data-c="5E" d="M112 560L249 694L257 686Q387 562 387 560L361 531Q359 532 303 581L250 627L195 580Q182 569 169 557T148 538L140 532Q138 530 125 546L112 560Z"></path></g></g></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(5652.5,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mtext" transform="translate(6097.2,0)"><path data-c="63" d="M370 305T349 305T313 320T297 358Q297 381 312 396Q317 401 317 402T307 404Q281 408 258 408Q209 408 178 376Q131 329 131 219Q131 137 162 90Q203 29 272 29Q313 29 338 55T374 117Q376 125 379 127T395 129H409Q415 123 415 120Q415 116 411 104T395 71T366 33T318 2T249 -11Q163 -11 99 53T34 214Q34 318 99 383T250 448T370 421T404 357Q404 334 387 320Z"></path><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z" transform="translate(444,0)"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(722,0)"></path><path data-c="70" d="M36 -148H50Q89 -148 97 -134V-126Q97 -119 97 -107T97 -77T98 -38T98 6T98 55T98 106Q98 140 98 177T98 243T98 296T97 335T97 351Q94 370 83 376T38 385H20V408Q20 431 22 431L32 432Q42 433 61 434T98 436Q115 437 135 438T165 441T176 442H179V416L180 390L188 397Q247 441 326 441Q407 441 464 377T522 216Q522 115 457 52T310 -11Q242 -11 190 33L182 40V-45V-101Q182 -128 184 -134T195 -145Q216 -148 244 -148H260V-194H252L228 -193Q205 -192 178 -192T140 -191Q37 -191 28 -194H20V-148H36ZM424 218Q424 292 390 347T305 402Q234 402 182 337V98Q222 26 294 26Q345 26 384 80T424 218Z" transform="translate(1000,0)"></path></g><g data-mml-node="mo" transform="translate(7653.2,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="msub" transform="translate(8042.2,0)"><g data-mml-node="mi"><path data-c="1D45F" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(484,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(8831.5,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(9220.5,0)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g><g data-mml-node="mo" transform="translate(9689.5,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(10078.5,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mn" transform="translate(10523.1,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mo" transform="translate(11245.4,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mi" transform="translate(12245.6,0)"><path data-c="1D716" d="M227 -11Q149 -11 95 41T40 174Q40 262 87 322Q121 367 173 396T287 430Q289 431 329 431H367Q382 426 382 411Q382 385 341 385H325H312Q191 385 154 277L150 265H327Q340 256 340 246Q340 228 320 219H138V217Q128 187 128 143Q128 77 160 52T231 26Q258 26 284 36T326 57T343 68Q350 68 354 58T358 39Q358 36 357 35Q354 31 337 21T289 0T227 -11Z"></path></g><g data-mml-node="mo" transform="translate(12651.6,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mn" transform="translate(13096.2,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mo" transform="translate(13818.5,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path></g><g data-mml-node="mi" transform="translate(14818.7,0)"><path data-c="1D716" d="M227 -11Q149 -11 95 41T40 174Q40 262 87 322Q121 367 173 396T287 430Q289 431 329 431H367Q382 426 382 411Q382 385 341 385H325H312Q191 385 154 277L150 265H327Q340 256 340 246Q340 228 320 219H138V217Q128 187 128 143Q128 77 160 52T231 26Q258 26 284 36T326 57T343 68Q350 68 354 58T358 39Q358 36 357 35Q354 31 337 21T289 0T227 -11Z"></path></g><g data-mml-node="mo" transform="translate(15224.7,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="msub" transform="translate(15613.7,0)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mover"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></g><g data-mml-node="mo" transform="translate(514,290) translate(-250 0)"><path data-c="5E" d="M112 560L249 694L257 686Q387 562 387 560L361 531Q359 532 303 581L250 627L195 580Q182 569 169 557T148 538L140 532Q138 530 125 546L112 560Z"></path></g></g></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(16702,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(17091,0) translate(0 -0.5)"><path data-c="5D" d="M16 1099V1150H247V-649H16V-598H196V1099H16Z"></path></g></g></g></g></svg></mjx-container><br>
+其中：
+<ul>
+<li><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -1.475ex;" xmlns="http://www.w3.org/2000/svg" width="16.131ex" height="3.844ex" role="img" focusable="false" viewBox="0 -1047.1 7129.8 1699.2"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D45F" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(484,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(789.3,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(1178.3,0)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g><g data-mml-node="mo" transform="translate(1647.3,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(2314,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(3369.8,0)"><g data-mml-node="mrow" transform="translate(566.5,516.8) scale(0.707)"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="mi" transform="translate(603,-150) scale(0.707)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g></g><g data-mml-node="mo" transform="translate(984.6,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="msub" transform="translate(1373.6,0)"><g data-mml-node="mi"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(562,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(2240.9,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="msub" transform="translate(2518.9,0)"><g data-mml-node="mi"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mi" transform="translate(502,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(3326.2,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g><g data-mml-node="mrow" transform="translate(220,-370.3) scale(0.707)"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="TeXAtom" transform="translate(603,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(502,-340.4)"><g data-mml-node="mi"><path data-c="1D45C" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path></g><g data-mml-node="mi" transform="translate(485,0)"><path data-c="1D459" d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path></g><g data-mml-node="mi" transform="translate(783,0)"><path data-c="1D451" d="M366 683Q367 683 438 688T511 694Q523 694 523 686Q523 679 450 384T375 83T374 68Q374 26 402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487H491Q506 153 506 145Q506 140 503 129Q490 79 473 48T445 8T417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157Q33 205 53 255T101 341Q148 398 195 420T280 442Q336 442 364 400Q369 394 369 396Q370 400 396 505T424 616Q424 629 417 632T378 637H357Q351 643 351 645T353 664Q358 683 366 683ZM352 326Q329 405 277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q233 26 290 98L298 109L352 326Z"></path></g></g></g></g></g><g data-mml-node="mo" transform="translate(1964.7,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="msub" transform="translate(2353.7,0)"><g data-mml-node="mi"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(562,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(3220.9,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="msub" transform="translate(3498.9,0)"><g data-mml-node="mi"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mi" transform="translate(502,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(4306.2,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g><rect width="3520" height="60" x="120" y="220"></rect></g></g></g></svg></mjx-container> 是新旧策略概率比值。</li>
+<li><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.357ex;" xmlns="http://www.w3.org/2000/svg" width="2.462ex" height="2.809ex" role="img" focusable="false" viewBox="0 -1084 1088.3 1241.8"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mover"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></g><g data-mml-node="mo" transform="translate(514,290) translate(-250 0)"><path data-c="5E" d="M112 560L249 694L257 686Q387 562 387 560L361 531Q359 532 303 581L250 627L195 580Q182 569 169 557T148 538L140 532Q138 530 125 546L112 560Z"></path></g></g></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g></g></g></svg></mjx-container> 是优势函数（Advantage）。</li>
+<li><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="0.919ex" height="1ex" role="img" focusable="false" viewBox="0 -431 406 442"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D716" d="M227 -11Q149 -11 95 41T40 174Q40 262 87 322Q121 367 173 396T287 430Q289 431 329 431H367Q382 426 382 411Q382 385 341 385H325H312Q191 385 154 277L150 265H327Q340 256 340 246Q340 228 320 219H138V217Q128 187 128 143Q128 77 160 52T231 26Q258 26 284 36T326 57T343 68Q350 68 354 58T358 39Q358 36 357 35Q354 31 337 21T289 0T227 -11Z"></path></g></g></g></svg></mjx-container> 是截断参数（Clip parameter）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-actor-ppo-kl-KL-散度">2. <code>actor/ppo_kl</code> (KL 散度)</h3>
+<ul>
+<li><strong>含义</strong>：衡量当前训练的 Actor 模型与初始参考模型（Reference Model）之间的偏离程度，防止模型偏离原分布太远。</li>
+<li><strong>计算公式</strong>：<br>
+<mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -0.667ex;" xmlns="http://www.w3.org/2000/svg" width="33.984ex" height="2.364ex" role="img" focusable="false" viewBox="0 -750 15021 1045"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mtext"><path data-c="4B" d="M128 622Q121 629 117 631T101 634T58 637H25V683H36Q57 680 180 680Q315 680 324 683H335V637H313Q235 637 233 620Q232 618 232 462L233 307L379 449Q425 494 479 546Q518 584 524 591T531 607V608Q531 630 503 636Q501 636 498 636T493 637H489V683H499Q517 680 630 680Q704 680 716 683H722V637H708Q633 633 589 597Q584 592 495 506T406 419T515 254T631 80Q644 60 662 54T715 46H736V0H728Q719 3 615 3Q493 3 472 0H461V46H469Q515 46 515 72Q515 78 512 84L336 351Q332 348 278 296L232 251V156Q232 62 235 58Q243 47 302 46H335V0H324Q303 3 180 3Q45 3 36 0H25V46H58Q100 47 109 49T128 61V622Z"></path><path data-c="4C" d="M128 622Q121 629 117 631T101 634T58 637H25V683H36Q48 680 182 680Q324 680 348 683H360V637H333Q273 637 258 635T233 622L232 342V129Q232 57 237 52Q243 47 313 47Q384 47 410 53Q470 70 498 110T536 221Q536 226 537 238T540 261T542 272T562 273H582V268Q580 265 568 137T554 5V0H25V46H58Q100 47 109 49T128 61V622Z" transform="translate(778,0)"></path></g><g data-mml-node="mo" transform="translate(1680.8,0)"><path data-c="2248" d="M55 319Q55 360 72 393T114 444T163 472T205 482Q207 482 213 482T223 483Q262 483 296 468T393 413L443 381Q502 346 553 346Q609 346 649 375T694 454Q694 465 698 474T708 483Q722 483 722 452Q722 386 675 338T555 289Q514 289 468 310T388 357T308 404T224 426Q164 426 125 393T83 318Q81 289 69 289Q55 289 55 319ZM55 85Q55 126 72 159T114 210T163 238T205 248Q207 248 213 248T223 249Q262 249 296 234T393 179L443 147Q502 112 553 112Q609 112 649 141T694 220Q694 249 708 249T722 217Q722 153 675 104T555 55Q514 55 468 76T388 123T308 170T224 192Q164 192 125 159T83 84Q80 55 69 55Q55 55 55 85Z"></path></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(2736.6,0)"><g data-mml-node="mi"><path data-c="1D53C" d="M12 666Q12 675 24 683H582Q590 680 593 672V588Q593 514 591 502T575 490Q567 490 563 495T555 517Q552 556 517 590Q486 623 445 634T340 648H282Q266 636 264 620T260 492V370H277Q329 375 358 391T404 439Q420 480 420 506Q420 529 436 529Q445 529 451 521Q455 517 455 361Q455 333 455 298T456 253Q456 217 453 207T437 197Q420 196 420 217Q420 240 406 270Q377 328 284 335H260V201Q261 174 261 134Q262 73 264 61T278 38Q281 36 282 35H331Q400 35 449 50Q571 93 602 179Q605 203 622 203Q629 203 634 197T640 183Q638 181 624 95T604 3L600 -1H24Q12 5 12 16Q12 35 51 35Q92 38 97 52Q102 60 102 341T97 632Q91 645 51 648Q12 648 12 666ZM137 341Q137 131 136 89T130 37Q129 36 129 35H235Q233 41 231 48L226 61V623L231 635L235 648H129Q132 641 133 638T135 603T137 517T137 341ZM557 603V648H504Q504 646 515 639Q527 634 542 619L557 603ZM420 317V397L406 383Q394 370 380 363L366 355Q373 350 382 346Q400 333 409 328L420 317ZM582 61L586 88Q585 88 582 83Q557 61 526 46L511 37L542 35H577Q577 36 578 39T580 49T582 61Z"></path></g></g><g data-mml-node="mrow" transform="translate(3570.2,0)"><g data-mml-node="mo"><path data-c="5B" d="M118 -250V750H255V710H158V-210H255V-250H118Z"></path></g><g data-mml-node="mi" transform="translate(278,0)"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(278,0)"></path><path data-c="67" d="M329 409Q373 453 429 453Q459 453 472 434T485 396Q485 382 476 371T449 360Q416 360 412 390Q410 404 415 411Q415 412 416 414V415Q388 412 363 393Q355 388 355 386Q355 385 359 381T368 369T379 351T388 325T392 292Q392 230 343 187T222 143Q172 143 123 171Q112 153 112 133Q112 98 138 81Q147 75 155 75T227 73Q311 72 335 67Q396 58 431 26Q470 -13 470 -72Q470 -139 392 -175Q332 -206 250 -206Q167 -206 107 -175Q29 -140 29 -75Q29 -39 50 -15T92 18L103 24Q67 55 67 108Q67 155 96 193Q52 237 52 292Q52 355 102 398T223 442Q274 442 318 416L329 409ZM299 343Q294 371 273 387T221 404Q192 404 171 388T145 343Q142 326 142 292Q142 248 149 227T179 192Q196 182 222 182Q244 182 260 189T283 207T294 227T299 242Q302 258 302 292T299 343ZM403 -75Q403 -50 389 -34T348 -11T299 -2T245 0H218Q151 0 138 -6Q118 -15 107 -34T95 -74Q95 -84 101 -97T122 -127T170 -155T250 -167Q319 -167 361 -139T403 -75Z" transform="translate(778,0)"></path></g><g data-mml-node="mo" transform="translate(1556,0)"><path data-c="2061" d=""></path></g><g data-mml-node="msub" transform="translate(1722.7,0)"><g data-mml-node="mi"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="TeXAtom" transform="translate(603,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D45F" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(451,0)"><path data-c="1D452" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path></g><g data-mml-node="mi" transform="translate(917,0)"><path data-c="1D453" d="M118 -162Q120 -162 124 -164T135 -167T147 -168Q160 -168 171 -155T187 -126Q197 -99 221 27T267 267T289 382V385H242Q195 385 192 387Q188 390 188 397L195 425Q197 430 203 430T250 431Q298 431 298 432Q298 434 307 482T319 540Q356 705 465 705Q502 703 526 683T550 630Q550 594 529 578T487 561Q443 561 443 603Q443 622 454 636T478 657L487 662Q471 668 457 668Q445 668 434 658T419 630Q412 601 403 552T387 469T380 433Q380 431 435 431Q480 431 487 430T498 424Q499 420 496 407T491 391Q489 386 482 386T428 385H372L349 263Q301 15 282 -47Q255 -132 212 -173Q175 -205 139 -205Q107 -205 81 -186T55 -132Q55 -95 76 -78T118 -61Q162 -61 162 -103Q162 -122 151 -136T127 -157L118 -162Z"></path></g></g></g><g data-mml-node="mo" transform="translate(3413,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(3802,0)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mo" transform="translate(4331,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="mi" transform="translate(4609,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mo" transform="translate(5078,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(5689.2,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mi" transform="translate(6689.4,0)"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(278,0)"></path><path data-c="67" d="M329 409Q373 453 429 453Q459 453 472 434T485 396Q485 382 476 371T449 360Q416 360 412 390Q410 404 415 411Q415 412 416 414V415Q388 412 363 393Q355 388 355 386Q355 385 359 381T368 369T379 351T388 325T392 292Q392 230 343 187T222 143Q172 143 123 171Q112 153 112 133Q112 98 138 81Q147 75 155 75T227 73Q311 72 335 67Q396 58 431 26Q470 -13 470 -72Q470 -139 392 -175Q332 -206 250 -206Q167 -206 107 -175Q29 -140 29 -75Q29 -39 50 -15T92 18L103 24Q67 55 67 108Q67 155 96 193Q52 237 52 292Q52 355 102 398T223 442Q274 442 318 416L329 409ZM299 343Q294 371 273 387T221 404Q192 404 171 388T145 343Q142 326 142 292Q142 248 149 227T179 192Q196 182 222 182Q244 182 260 189T283 207T294 227T299 242Q302 258 302 292T299 343ZM403 -75Q403 -50 389 -34T348 -11T299 -2T245 0H218Q151 0 138 -6Q118 -15 107 -34T95 -74Q95 -84 101 -97T122 -127T170 -155T250 -167Q319 -167 361 -139T403 -75Z" transform="translate(778,0)"></path></g><g data-mml-node="mo" transform="translate(7967.4,0)"><path data-c="2061" d=""></path></g><g data-mml-node="msub" transform="translate(8134.1,0)"><g data-mml-node="mi"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="mi" transform="translate(603,-150) scale(0.707)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g></g><g data-mml-node="mo" transform="translate(9118.7,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(9507.7,0)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mo" transform="translate(10036.7,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="mi" transform="translate(10314.7,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mo" transform="translate(10783.7,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(11172.7,0)"><path data-c="5D" d="M22 710V750H159V-250H22V-210H119V710H22Z"></path></g></g></g></g></svg></mjx-container></li>
+</ul>
+<h3 id="3-actor-entropy-熵">3. <code>actor/entropy</code> (熵)</h3>
+<ul>
+<li><strong>含义</strong>：衡量模型输出概率分布的离散程度与随机性。熵越高探索性越强，熵过低可能导致模型坍缩。</li>
+<li><strong>计算公式</strong>：<br>
+<mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -1.018ex;" xmlns="http://www.w3.org/2000/svg" width="32.197ex" height="3.167ex" role="img" focusable="false" viewBox="0 -950 14231.2 1400"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D43B" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 219 683Q260 681 355 681Q389 681 418 681T463 682T483 682Q499 682 499 672Q499 670 497 658Q492 641 487 638H485Q483 638 480 638T473 638T464 637T455 637Q416 636 405 634T387 623Q384 619 355 500Q348 474 340 442T328 395L324 380Q324 378 469 378H614L615 381Q615 384 646 504Q674 619 674 627T617 637Q594 637 587 639T580 648Q580 650 582 660Q586 677 588 679T604 682Q609 682 646 681T740 680Q802 680 835 681T871 682Q888 682 888 672Q888 645 876 638H874Q872 638 869 638T862 638T853 637T844 637Q805 636 794 634T776 623Q773 618 704 340T634 58Q634 51 638 51Q646 48 692 46H723Q729 38 729 37T726 19Q722 6 716 0H701Q664 2 567 2Q533 2 504 2T458 2T437 1Q420 1 420 10Q420 15 423 24Q428 43 433 45Q437 46 448 46H454Q481 46 514 49Q520 50 522 50T528 55T534 64T540 82T547 110T558 153Q565 181 569 198Q602 330 602 331T457 332H312L279 197Q245 63 245 58Q245 51 253 49T303 46H334Q340 38 340 37T337 19Q333 6 327 0H312Q275 2 178 2Q144 2 115 2T69 2T48 1Q31 1 31 10Q31 12 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path></g><g data-mml-node="mo" transform="translate(888,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(1277,0)"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="mo" transform="translate(1847,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(2236,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mo" transform="translate(2705,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(3094,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(3760.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mo" transform="translate(4816.6,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mo" transform="translate(5761.2,0)"><path data-c="2211" d="M60 948Q63 950 665 950H1267L1325 815Q1384 677 1388 669H1348L1341 683Q1320 724 1285 761Q1235 809 1174 838T1033 881T882 898T699 902H574H543H251L259 891Q722 258 724 252Q725 250 724 246Q721 243 460 -56L196 -356Q196 -357 407 -357Q459 -357 548 -357T676 -358Q812 -358 896 -353T1063 -332T1204 -283T1307 -196Q1328 -170 1348 -124H1388Q1388 -125 1381 -145T1356 -210T1325 -294L1267 -449L666 -450Q64 -450 61 -448Q55 -446 55 -439Q55 -437 57 -433L590 177Q590 178 557 222T452 366T322 544L56 909L55 924Q55 945 60 948Z"></path></g><g data-mml-node="mi" transform="translate(7371.9,0)"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="mo" transform="translate(7941.9,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(8330.9,0)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mo" transform="translate(8859.9,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="mi" transform="translate(9137.9,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mo" transform="translate(9606.9,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mi" transform="translate(10162.6,0)"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(278,0)"></path><path data-c="67" d="M329 409Q373 453 429 453Q459 453 472 434T485 396Q485 382 476 371T449 360Q416 360 412 390Q410 404 415 411Q415 412 416 414V415Q388 412 363 393Q355 388 355 386Q355 385 359 381T368 369T379 351T388 325T392 292Q392 230 343 187T222 143Q172 143 123 171Q112 153 112 133Q112 98 138 81Q147 75 155 75T227 73Q311 72 335 67Q396 58 431 26Q470 -13 470 -72Q470 -139 392 -175Q332 -206 250 -206Q167 -206 107 -175Q29 -140 29 -75Q29 -39 50 -15T92 18L103 24Q67 55 67 108Q67 155 96 193Q52 237 52 292Q52 355 102 398T223 442Q274 442 318 416L329 409ZM299 343Q294 371 273 387T221 404Q192 404 171 388T145 343Q142 326 142 292Q142 248 149 227T179 192Q196 182 222 182Q244 182 260 189T283 207T294 227T299 242Q302 258 302 292T299 343ZM403 -75Q403 -50 389 -34T348 -11T299 -2T245 0H218Q151 0 138 -6Q118 -15 107 -34T95 -74Q95 -84 101 -97T122 -127T170 -155T250 -167Q319 -167 361 -139T403 -75Z" transform="translate(778,0)"></path></g><g data-mml-node="mo" transform="translate(11440.6,0)"><path data-c="2061" d=""></path></g><g data-mml-node="mi" transform="translate(11607.2,0)"><path data-c="1D70B" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></g><g data-mml-node="mo" transform="translate(12177.2,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(12566.2,0)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mo" transform="translate(13095.2,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="mi" transform="translate(13373.2,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g><g data-mml-node="mo" transform="translate(13842.2,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g></g></svg></mjx-container></li>
+</ul>
+<h3 id="4-actor-grad-norm-梯度范数">4. <code>actor/grad_norm</code> (梯度范数)</h3>
+<ul>
+<li><strong>含义</strong>：衡量当前模型参数梯度的模长，是监控梯度爆炸的核心指标。</li>
+<li><strong>计算公式</strong>：<br>
+$$|g|<em>2 = \sqrt{\sum</em>{i=1}^{n} (\nabla_{\theta_i} L)^2}$$</li>
+</ul>
+<h3 id="5-actor-pg-clipfrac-pg-clipfrac-lower">5. <code>actor/pg_clipfrac</code> &amp; <code>pg_clipfrac_lower</code></h3>
+<ul>
+<li><strong>含义</strong>：策略更新被 PPO 截断机制限制的 Token 比例。如果该比例过高，说明学习率可能过大或步子迈得太急。</li>
+<li><strong>计算公式</strong>：<br>
+统计在一个 Batch 中，满足 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.566ex;" xmlns="http://www.w3.org/2000/svg" width="13.697ex" height="2.262ex" role="img" focusable="false" viewBox="0 -750 6054.3 1000"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo" transform="translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="msub" transform="translate(278,0)"><g data-mml-node="mi"><path data-c="1D45F" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(484,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g><g data-mml-node="mo" transform="translate(1067.3,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(1456.3,0)"><path data-c="1D703" d="M35 200Q35 302 74 415T180 610T319 704Q320 704 327 704T339 705Q393 701 423 656Q462 596 462 495Q462 380 417 261T302 66T168 -10H161Q125 -10 99 10T60 63T41 130T35 200ZM383 566Q383 668 330 668Q294 668 260 623T204 521T170 421T157 371Q206 370 254 370L351 371Q352 372 359 404T375 484T383 566ZM113 132Q113 26 166 26Q181 26 198 36T239 74T287 161T335 307L340 324H145Q145 321 136 286T120 208T113 132Z"></path></g><g data-mml-node="mo" transform="translate(1925.3,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(2536.5,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mn" transform="translate(3536.7,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mo" transform="translate(4036.7,0) translate(0 -0.5)"><path data-c="7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path></g><g data-mml-node="mo" transform="translate(4592.5,0)"><path data-c="3E" d="M84 520Q84 528 88 533T96 539L99 540Q106 540 253 471T544 334L687 265Q694 260 694 250T687 235Q685 233 395 96L107 -40H101Q83 -38 83 -20Q83 -19 83 -17Q82 -10 98 -1Q117 9 248 71Q326 108 378 132L626 250L378 368Q90 504 86 509Q84 513 84 520Z"></path></g><g data-mml-node="mi" transform="translate(5648.3,0)"><path data-c="1D716" d="M227 -11Q149 -11 95 41T40 174Q40 262 87 322Q121 367 173 396T287 430Q289 431 329 431H367Q382 426 382 411Q382 385 341 385H325H312Q191 385 154 277L150 265H327Q340 256 340 246Q340 228 320 219H138V217Q128 187 128 143Q128 77 160 52T231 26Q258 26 284 36T326 57T343 68Q350 68 354 58T358 39Q358 36 357 35Q354 31 337 21T289 0T227 -11Z"></path></g></g></g></svg></mjx-container> 的 Token 占比。</li>
+</ul>
+<h3 id="6">6.</h3>
+<ul>
+<li><strong><code>actor/perf/cpu_memory_used_gb</code></strong>：当前 Actor 进程占用的 CPU 物理内存。</li>
+<li><strong><code>actor/perf/max_memory_allocated_gb</code></strong>：Actor 模型在 GPU 上实际分配的显存峰值。</li>
+<li><strong><code>actor/perf/max_memory_reserved_gb</code></strong>：PyTorch 显存分配器为模型预留的总显存大小。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://minna-li.github.io">Minna Li</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://minna-li.github.io/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/">https://minna-li.github.io/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://minna-li.github.io" target="_blank">Minna's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/verL/">verL</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/27/RL%E5%9C%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%BB%AD%E8%AE%AD%E4%B8%AD%E7%9A%84%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/" title="RL在大模型续训中的算法总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">RL在大模型续训中的算法总结</div></div><div class="info-2"><div class="info-item-1">PPO (Proximal Policy Optimization) 概述  核心输入与输出：Input数据集 -----&gt; Output Actor model RLHF 阶段：在 SFT（监督微调）之后，通过奖励信号进一步优化模型的回答。   核心模型架构 训练过程中涉及四个量级近似的模型：  Actor &amp; Critic：独立模型，使用不同的 loss（这点与原论文不同）。 Reward Model：在识别到 eos token（结束标志）之后，对整个生成的句子进行打分。 Reference Model：用于计算 KL 散度约束，防止新模型偏离原模型太远。 Critic Model：对当前优化模型的每一个状态（当前生成的 token）打分，提供一个预期分数。   训练流程 1. 采样阶段 Actor model 根据数据集的 prompt  生成推理 + 答案文本。  对于自回归生成的回答 （包含  个 Token：），Actor 记录选择每个 Token  的概率。 Reference model 过一遍这个回答 ，算出如果操作初始模型，生成这些 Token...</div></div></div></a><a class="pagination-related" href="/2026/03/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%85%AB%E8%82%A1%E7%AC%94%E8%AE%B0/" title="大模型八股笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">大模型八股笔记</div></div><div class="info-2"><div class="info-item-1">Transformer基础  一、 自注意力机制（Self-Attention）深度剖析 1. 为什么计算公式中要除以 ？ 公式如下：   数学底层原因：假设  和  中的输入特征是独立同分布的随机变量，且均值为 0，方差为 1。它们做点积  时，包含  个元素的乘积和。  此时，点积结果的均值依然是 0，但方差会膨胀到 。 如果不做缩放，当  很大时，点积结果的值域会非常大。   导致后果（梯度消失）：大数值传入 softmax 后，会落入其两端的饱和区（Saturating Region），此时 softmax 的导数（梯度）将趋近于 0，从而在反向传播时引发致命的梯度消失（Gradient Vanishing）。 缩放正义：除以  后，可以将点积结果的方差重新拉回 1，使 softmax 保持在梯度敏感的区域。  2.  矩阵的维度关系是怎么流转的？ 假设输入序列长度为 ，特征维度为 ：  输入  维度:  三大权重矩阵  维度: 均为  映射后的  维度: 均为  点积得分  维度: （这一步揭示了为什么长序列的计算开销呈  二次方增长）。 最终输出  维度: 。维度完美...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Minna Li</div><div class="author-info-description">Minna Li的个人技术博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">verl 框架下离线数据集处理与 RL 训练配置教程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-%E9%85%8D%E7%BD%AE-Conda-%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">一、 配置 Conda 虚拟环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A3%80%E6%9F%A5-Conda-%E6%98%AF%E5%90%A6%E5%8F%AF%E7%94%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">1. 检查 Conda 是否可用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA-Python-3-12-%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.2.</span> <span class="toc-text">2. 创建 Python 3.12 虚拟环境</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%88%9B%E5%BB%BA%E5%A4%B1%E8%B4%A5%E6%88%96%E8%80%85%E9%9C%80%E8%A6%81%E5%88%A0%E9%99%A4%E4%B9%8B%E5%90%8E%E5%86%8D%E9%87%8D%E6%96%B0%E4%B8%8B%E8%BD%BD%EF%BC%9A"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">如果创建失败或者需要删除之后再重新下载：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%BF%80%E6%B4%BB%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.3.</span> <span class="toc-text">3. 激活虚拟环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-%E6%8B%89%E5%8F%96%E5%B9%B6%E5%AE%89%E8%A3%85-verl-%E6%A1%86%E6%9E%B6"><span class="toc-number">1.2.</span> <span class="toc-text">二、 拉取并安装 verl 框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">1. 创建项目根目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%85%8B%E9%9A%86-verl-%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93"><span class="toc-number">1.2.2.</span> <span class="toc-text">2. 克隆 verl 官方代码仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%AE%89%E8%A3%85verl%E6%89%80%E9%9C%80%E7%9A%84%E5%8C%85%EF%BC%8C%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC"><span class="toc-number">1.2.3.</span> <span class="toc-text">3. 安装verl所需的包，一个完整的安装脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%89%E8%A3%85-verl-%E5%88%B0%E9%85%8D%E7%BD%AE%E5%A5%BD%E7%9A%84%E7%8E%AF%E5%A2%83%E4%B8%AD"><span class="toc-number">1.2.4.</span> <span class="toc-text">4. 安装 verl 到配置好的环境中</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E4%B8%8B%E8%BD%BD%E5%9F%BA%E5%BA%A7%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">三、 下载基座大语言模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B%E4%BF%9D%E5%AD%98%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 创建模型保存文件夹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%8B%E8%BD%BD%E6%8C%87%E4%BB%A4"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. 下载指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E7%9B%B4%E6%8E%A5%E4%B8%8B%E8%BD%BD%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">2.1 直接下载到服务器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E5%85%88%E4%B8%8B%E8%BD%BD%E5%88%B0%E6%9C%AC%E5%9C%B0%E7%94%B5%E8%84%91%EF%BC%8C%E5%86%8D%E4%B8%8A%E4%BC%A0%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88%E6%8D%AE%E8%AF%B4%E6%AF%94%E8%BE%83%E5%BF%AB%EF%BC%89"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">2.2 先下载到本地电脑，再上传到服务器（据说比较快）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E4%B8%8B%E8%BD%BD%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%9C%AC%E5%9C%B0%E6%B8%85%E6%B4%97"><span class="toc-number">1.4.</span> <span class="toc-text">四、 下载原始数据集与本地清洗</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9B%B4%E6%8E%A5%E4%B8%8B%E8%BD%BD%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88%E4%BB%A5%E4%B8%8B%E7%9B%B4%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BB%88%E7%AB%AF%E6%89%A7%E8%A1%8C%EF%BC%89"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. 数据集直接下载到服务器（以下直接服务器终端执行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%90%E8%A1%8C%E6%B8%85%E6%B4%97%E6%95%B0%E6%8D%AE%E8%84%9A%E6%9C%AC%EF%BC%8C%E5%B0%86%E6%95%B0%E6%8D%AE%E9%9B%86%E7%BF%BB%E8%AF%91%E6%88%90-verl-%E4%B8%93%E5%B1%9E%E7%9A%84-parquet-%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.4.2.</span> <span class="toc-text">2. 运行清洗数据脚本，将数据集翻译成 verl 专属的 parquet 格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E9%85%8D%E7%BD%AE-Reward-Model-%E8%B7%AF%E7%94%B1-init-py"><span class="toc-number">1.5.</span> <span class="toc-text">五、 配置 Reward Model 路由 (__init__.py)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81-%E9%85%8D%E7%BD%AE%E5%B9%B6%E5%90%AF%E5%8A%A8%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E8%AE%AD%E7%BB%83%E8%84%9A%E6%9C%AC-run-grpo-sh"><span class="toc-number">1.6.</span> <span class="toc-text">六、 配置并启动强化学习训练脚本 (run_grpo.sh)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E5%B9%B6%E5%86%99%E5%85%A5%E8%84%9A%E6%9C%AC%E5%86%85%E5%AE%B9%EF%BC%88%E7%BB%88%E7%AB%AF%E7%9B%B4%E6%8E%A5%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="toc-number">1.6.1.</span> <span class="toc-text">1. 创建并写入脚本内容（终端直接运行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-tmux-%E7%BB%88%E7%AB%AF%E5%A4%8D%E7%94%A8%E5%99%A8%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97"><span class="toc-number">1.6.2.</span> <span class="toc-text">2. tmux 终端复用器使用指南</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E"><span class="toc-number">1.6.3.</span> <span class="toc-text">功能说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4"><span class="toc-number">1.6.4.</span> <span class="toc-text">常用指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.6.5.</span> <span class="toc-text">典型使用场景</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">Tensorboard中各个指标的意义</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#actor-%E9%9D%A2%E6%9D%BF%E4%B8%8B%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87"><span class="toc-number">2.1.</span> <span class="toc-text">actor 面板下核心指标</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-actor-loss-actor-pg-loss"><span class="toc-number">2.1.1.</span> <span class="toc-text">1. actor&#x2F;loss &amp; actor&#x2F;pg_loss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-actor-ppo-kl-KL-%E6%95%A3%E5%BA%A6"><span class="toc-number">2.1.2.</span> <span class="toc-text">2. actor&#x2F;ppo_kl (KL 散度)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-actor-entropy-%E7%86%B5"><span class="toc-number">2.1.3.</span> <span class="toc-text">3. actor&#x2F;entropy (熵)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-actor-grad-norm-%E6%A2%AF%E5%BA%A6%E8%8C%83%E6%95%B0"><span class="toc-number">2.1.4.</span> <span class="toc-text">4. actor&#x2F;grad_norm (梯度范数)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-actor-pg-clipfrac-pg-clipfrac-lower"><span class="toc-number">2.1.5.</span> <span class="toc-text">5. actor&#x2F;pg_clipfrac &amp; pg_clipfrac_lower</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6"><span class="toc-number">2.1.6.</span> <span class="toc-text">6.</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/27/RL%E5%9C%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%BB%AD%E8%AE%AD%E4%B8%AD%E7%9A%84%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/" title="RL在大模型续训中的算法总结">RL在大模型续训中的算法总结</a><time datetime="2026-07-27T08:01:28.000Z" title="发表于 2026-07-27 16:01:28">2026-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/23/verl%E6%A1%86%E6%9E%B6%E5%AE%9E%E8%B7%B5RL%E7%BB%AD%E8%AE%ADQwen3-8B/" title="verl框架实践RL续训Qwen3-8B">verl框架实践RL续训Qwen3-8B</a><time datetime="2026-07-23T09:32:05.000Z" title="发表于 2026-07-23 17:32:05">2026-07-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/Hexo%E5%A4%9A%E7%AB%AF%E9%83%A8%E7%BD%B2/" title="Hexo多端部署">Hexo多端部署</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%85%AB%E8%82%A1%E7%AC%94%E8%AE%B0/" title="大模型八股笔记">大模型八股笔记</a><time datetime="2026-03-16T16:00:00.000Z" title="发表于 2026-03-17 00:00:00">2026-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/27/TensorFlow%E6%A1%86%E6%9E%B6/" title="TensorFlow框架学习">TensorFlow框架学习</a><time datetime="2025-03-26T16:00:00.000Z" title="发表于 2025-03-27 00:00:00">2025-03-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Minna Li</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
